@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>הקופונים שלנו</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================ Design tokens ============================ */
+:root{
+  --bg:#f4f5fa;
+  --surface:#ffffff;
+  --surface-2:#f7f8fc;
+  --surface-3:#eef0f7;
+  --text:#0f172a;
+  --text-2:#475569;
+  --muted:#94a3b8;
+  --line:#e6e9f2;
+  --line-strong:#d6dbe8;
+  --primary:#4f46e5;
+  --primary-2:#7c3aed;
+  --primary-soft:#eef0ff;
+  --ok:#0d9488;
+  --ok-soft:#e6fbf7;
+  --warn:#d97706;
+  --warn-soft:#fef4e6;
+  --danger:#e11d48;
+  --danger-soft:#ffeaef;
+  --radius-lg:22px;
+  --radius:16px;
+  --radius-sm:11px;
+  --shadow-1:0 1px 2px rgba(15,23,42,.05);
+  --shadow-2:0 2px 6px rgba(15,23,42,.06), 0 12px 30px rgba(15,23,42,.07);
+  --shadow-3:0 10px 40px rgba(15,23,42,.16);
+  --ring:0 0 0 4px rgba(79,70,229,.15);
+}
+html[data-theme="dark"]{
+  --bg:#0b1020;
+  --surface:#141a2e;
+  --surface-2:#1a2138;
+  --surface-3:#232b45;
+  --text:#e8ecf7;
+  --text-2:#a9b3cc;
+  --muted:#6d7898;
+  --line:#26304c;
+  --line-strong:#33405f;
+  --primary:#7c8cff;
+  --primary-2:#a78bfa;
+  --primary-soft:#1e2547;
+  --ok:#2dd4bf;
+  --ok-soft:#102c2c;
+  --warn:#fbbf24;
+  --warn-soft:#33270e;
+  --danger:#fb7185;
+  --danger-soft:#3a1421;
+  --shadow-1:0 1px 2px rgba(0,0,0,.3);
+  --shadow-2:0 2px 8px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.35);
+  --shadow-3:0 10px 44px rgba(0,0,0,.55);
+  --ring:0 0 0 4px rgba(124,140,255,.22);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:'Heebo',system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(900px 500px at 100% -10%, rgba(124,58,237,.12), transparent 60%),
+    radial-gradient(800px 460px at -10% 10%, rgba(79,70,229,.12), transparent 60%);
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:none;background:none}
+a{color:var(--primary);text-decoration:none}
+[hidden]{display:none !important}
+::selection{background:var(--primary);color:#fff}
+
+/* ============================ Primitives ============================ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:15px;
+  background:var(--surface-3);color:var(--text);
+  transition:transform .12s ease, box-shadow .18s ease, background .18s ease, opacity .18s;
+  white-space:nowrap;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:focus-visible{outline:none;box-shadow:var(--ring)}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 6px 18px rgba(79,70,229,.28)}
+.btn.ghost{background:transparent;border:1px solid var(--line-strong);color:var(--text-2)}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.soft{background:var(--primary-soft);color:var(--primary)}
+.btn.danger{background:var(--danger-soft);color:var(--danger)}
+.btn.sm{padding:7px 12px;font-size:14px;border-radius:10px}
+.btn.icon{padding:9px;width:38px;height:38px;border-radius:12px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13.5px;font-weight:600;color:var(--text-2)}
+.field .hint{font-size:12.5px;color:var(--muted);font-weight:400}
+input[type=text],input[type=tel],input[type=number],input[type=date],input[type=url],select,textarea{
+  width:100%;padding:11px 13px;border-radius:12px;
+  border:1px solid var(--line-strong);background:var(--surface);
+  transition:border-color .15s, box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:var(--ring)}
+textarea{resize:vertical;min-height:74px}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:600;
+  background:var(--surface-3);color:var(--text-2);
+}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.danger{background:var(--danger-soft);color:var(--danger)}
+
+/* ============================ Login ============================ */
+#login{
+  min-height:100dvh;display:grid;place-items:center;padding:24px;
+}
+.login-card{
+  width:min(430px,100%);background:var(--surface);border-radius:var(--radius-lg);
+  padding:38px 32px;box-shadow:var(--shadow-2);border:1px solid var(--line);
+  text-align:center;
+}
+.login-logo{
+  width:66px;height:66px;margin:0 auto 18px;border-radius:20px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  display:grid;place-items:center;font-size:32px;
+  box-shadow:0 10px 26px rgba(79,70,229,.35);
+}
+.login-card h1{margin:0 0 8px;font-size:26px;font-weight:800;letter-spacing:-.4px}
+.login-card p{margin:0 0 26px;color:var(--text-2);font-size:15px}
+#gbtn{display:flex;justify-content:center;min-height:44px}
+.login-note{margin-top:22px;font-size:12.5px;color:var(--muted);line-height:1.7}
+.login-error{
+  margin-top:18px;padding:12px 14px;border-radius:12px;
+  background:var(--danger-soft);color:var(--danger);font-size:14px;font-weight:500;
+}
+
+/* ============================ App shell ============================ */
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px 80px}
+header.top{
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.top-inner{
+  max-width:1240px;margin:0 auto;padding:12px 20px;
+  display:flex;align-items:center;gap:12px;
+}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;letter-spacing:-.3px}
+.brand .mark{
+  width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:20px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  box-shadow:0 6px 16px rgba(79,70,229,.3);
+}
+.spacer{flex:1}
+.user-pill{
+  display:flex;align-items:center;gap:9px;padding:5px 12px 5px 5px;
+  background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  box-shadow:var(--shadow-1);
+}
+.user-pill img{width:30px;height:30px;border-radius:50%;object-fit:cover}
+.user-pill span{font-size:14px;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ============================ Stats ============================ */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:14px;margin:24px 0 20px;
+}
+.stat{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;box-shadow:var(--shadow-1);position:relative;overflow:hidden;
+}
+.stat::after{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:var(--primary)}
+.stat.g2::after{background:var(--ok)} .stat.g3::after{background:var(--warn)} .stat.g4::after{background:var(--muted)}
+.stat .k{font-size:13px;color:var(--text-2);font-weight:600;display:flex;align-items:center;gap:6px}
+.stat .v{font-size:28px;font-weight:800;letter-spacing:-1px;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat .s{font-size:12.5px;color:var(--muted)}
+
+/* ============================ Toolbar ============================ */
+.toolbar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:18px;
+}
+.tabs{display:flex;gap:4px;background:var(--surface-3);padding:4px;border-radius:14px}
+.tabs button{
+  padding:8px 16px;border-radius:11px;font-weight:600;font-size:14.5px;color:var(--text-2);
+  transition:.16s;
+}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow-1)}
+.search{position:relative;flex:1;min-width:200px;max-width:340px}
+.search input{padding-inline-start:38px}
+.search svg{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
+
+/* ============================ Coupon grid ============================ */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(315px,1fr));gap:16px}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow-1);overflow:hidden;position:relative;
+  transition:transform .16s ease, box-shadow .2s ease;
+  display:flex;flex-direction:column;
+}
+.card:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.card .strip{height:4px;background:var(--pc,var(--primary))}
+.card-body{padding:16px 18px 14px;display:flex;flex-direction:column;gap:12px;flex:1}
+.card-head{display:flex;align-items:flex-start;gap:10px}
+.provider-badge{
+  width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;
+  font-weight:800;font-size:15px;color:#fff;background:var(--pc,var(--primary));
+  box-shadow:0 5px 14px color-mix(in srgb, var(--pc,var(--primary)) 40%, transparent);
+}
+.card-title{flex:1;min-width:0}
+.card-title h3{margin:0;font-size:16.5px;font-weight:700;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-title .sub{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr;text-align:start}
+.balance-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.balance{font-size:30px;font-weight:800;letter-spacing:-1.2px;font-variant-numeric:tabular-nums;line-height:1.1}
+.balance small{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0}
+.bar{height:7px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--pc,var(--primary)),color-mix(in srgb,var(--pc,var(--primary)) 55%, #fff));transition:width .4s ease}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.card-actions{
+  display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--line);background:var(--surface-2);
+}
+.card-actions .btn{flex:1}
+.card.archived{opacity:.9}
+.card.archived .balance{color:var(--muted)}
+
+.empty{
+  text-align:center;padding:70px 20px;color:var(--text-2);
+  background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius-lg);
+}
+.empty .em{font-size:46px;margin-bottom:10px}
+.empty h3{margin:0 0 6px;font-size:19px}
+.empty p{margin:0 0 18px;color:var(--muted)}
+
+/* ============================ Modal ============================ */
+dialog{
+  border:none;padding:0;background:transparent;max-width:100vw;max-height:100dvh;
+  color:var(--text);
+}
+dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
+.modal{
+  width:min(560px,calc(100vw - 28px));
+  background:var(--surface);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-3);border:1px solid var(--line);
+  max-height:calc(100dvh - 40px);display:flex;flex-direction:column;
+  animation:pop .2s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes pop{from{transform:translateY(14px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.modal-head{
+  padding:18px 22px 14px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;
+}
+.modal-head h2{margin:0;font-size:18.5px;font-weight:700;flex:1;letter-spacing:-.3px}
+.modal-body{padding:20px 22px;overflow:auto;display:flex;flex-direction:column;gap:15px}
+.modal-foot{padding:14px 22px 18px;border-top:1px solid var(--line);display:flex;gap:10px}
+.modal-foot .btn{flex:1}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+@media(max-width:520px){.row2{grid-template-columns:1fr}}
+
+/* ============================ History list ============================ */
+.list{display:flex;flex-direction:column;gap:8px}
+.li{
+  display:flex;align-items:center;gap:12px;padding:11px 14px;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:13px;
+}
+.li .amt{font-weight:700;font-variant-numeric:tabular-nums;color:var(--danger)}
+.li .txt{flex:1;min-width:0}
+.li .txt b{font-size:14.5px;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li .txt small{color:var(--muted);font-size:12.5px}
+
+/* ============================ Balance check ============================ */
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{
+  display:flex;gap:12px;padding:12px 14px;border-radius:13px;
+  background:var(--surface-2);border:1px solid var(--line);
+}
+.step .n{
+  width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;
+  background:var(--surface-3);color:var(--text-2);font-size:13px;font-weight:700;
+}
+.step.active{border-color:var(--primary);background:var(--primary-soft)}
+.step.active .n{background:var(--primary);color:#fff}
+.step.done .n{background:var(--ok);color:#fff}
+.step.error{border-color:var(--danger);background:var(--danger-soft)}
+.step .t{flex:1;font-size:14px}
+.step .t b{display:block;font-weight:600}
+.step .t small{color:var(--text-2)}
+.otp{
+  width:100%;text-align:center;letter-spacing:.5em;font-size:26px;font-weight:700;
+  direction:ltr;font-variant-numeric:tabular-nums;padding:14px;
+}
+.callout{
+  padding:13px 15px;border-radius:13px;font-size:13.5px;line-height:1.7;
+  background:var(--warn-soft);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 25%, transparent);
+}
+.callout code{
+  display:block;direction:ltr;text-align:left;background:rgba(0,0,0,.06);
+  padding:8px 10px;border-radius:8px;margin-top:7px;font-size:12.5px;
+  font-family:ui-monospace,Consolas,monospace;user-select:all;
+}
+.spin{
+  width:16px;height:16px;border-radius:50%;flex:none;
+  border:2.5px solid color-mix(in srgb,var(--primary) 30%, transparent);
+  border-top-color:var(--primary);animation:sp .7s linear infinite;
+}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ============================ Toasts ============================ */
+#toasts{position:fixed;bottom:18px;inset-inline-start:18px;z-index:200;display:flex;flex-direction:column;gap:9px}
+.toast{
+  padding:12px 17px;border-radius:13px;background:var(--surface);color:var(--text);
+  box-shadow:var(--shadow-2);border:1px solid var(--line);font-size:14.5px;font-weight:500;
+  animation:slide .25s ease;max-width:340px;
+}
+.toast.ok{border-inline-start:4px solid var(--ok)}
+.toast.err{border-inline-start:4px solid var(--danger)}
+@keyframes slide{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+
+/* ============================ FAB ============================ */
+.fab{
+  position:fixed;bottom:22px;inset-inline-end:22px;z-index:50;
+  padding:14px 22px;border-radius:999px;font-weight:700;font-size:16px;color:#fff;
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  box-shadow:0 10px 30px rgba(79,70,229,.4);
+  display:flex;align-items:center;gap:8px;
+}
+.fab:hover{transform:translateY(-2px)}
+@media(max-width:600px){
+  .stat .v{font-size:24px}
+  .top-inner{padding:10px 14px}
+  .wrap{padding:0 14px 100px}
+  .user-pill span{display:none}
+}
+.skeleton{
+  background:linear-gradient(90deg,var(--surface-3) 25%,var(--surface-2) 37%,var(--surface-3) 63%);
+  background-size:400% 100%;animation:sk 1.3s ease infinite;border-radius:var(--radius);height:190px;
+}
+@keyframes sk{0%{background-position:100% 50%}100%{background-position:0 50%}}
+</style>
+</head>
+<body>
+
+<!-- ============================ LOGIN ============================ -->
+<div id="login">
+  <div class="login-card">
+    <div class="login-logo">🎟️</div>
+    <h1>הקופונים שלנו</h1>
+    <p>ניהול קופונים, יתרות ושימושים — לך ולאשתך בלבד.</p>
+    <div id="gbtn"></div>
+    <div id="loginError" class="login-error" hidden></div>
+    <div class="login-note">
+      הכניסה מוגבלת לחשבונות Google מאושרים בלבד.<br>
+      הנתונים נשמרים בגיליון Google פרטי שבבעלותכם.
+    </div>
+  </div>
+</div>
+
+<!-- ============================ APP ============================ -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand"><div class="mark">🎟️</div><span>הקופונים שלנו</span></div>
+      <div class="spacer"></div>
+      <button class="btn icon ghost" id="btnRefresh" title="רענון">⟳</button>
+      <button class="btn icon ghost" id="btnTheme" title="מצב כהה/בהיר">🌙</button>
+      <div class="user-pill">
+        <img id="userPic" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+        <span id="userName"></span>
+        <button class="btn sm ghost" id="btnLogout" title="התנתקות">יציאה</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="stats" id="stats"></section>
+
+    <div class="toolbar">
+      <div class="tabs" role="tablist">
+        <button role="tab" data-view="active" aria-selected="true">פעילים</button>
+        <button role="tab" data-view="archived" aria-selected="false">היסטוריה</button>
+      </div>
+      <div class="search">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" id="q" placeholder="חיפוש קופון…">
+      </div>
+      <select id="filterProvider" style="width:auto;min-width:140px"></select>
+      <div class="spacer"></div>
+      <button class="btn ghost sm" id="btnBotSettings">🤖 <span id="botStatusText">עוזר בדיקה</span></button>
+    </div>
+
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <button class="fab" id="btnAdd">＋ קופון חדש</button>
+</div>
+
+<div id="toasts"></div>
+
+<!-- ============================ MODALS ============================ -->
+<dialog id="dlgCoupon"><form method="dialog" class="modal" id="couponForm">
+  <div class="modal-head"><h2 id="couponTitle">קופון חדש</h2>
+    <button class="btn icon ghost" value="cancel" type="submit" aria-label="סגור">✕</button></div>
+  <div class="modal-body">
+    <div class="field">
+      <label for="fProvider">ספק</label>
+      <select id="fProvider"></select>
+    </div>
+    <div class="field" id="wrapProviderName" hidden>
+      <label for="fProviderName">שם הספק</label>
+      <input type="text" id="fProviderName" placeholder="לדוגמה: BuyMe, סיבוס…">
+    </div>
+    <div class="field">
+      <label for="fName">כינוי לקופון</label>
+      <input type="text" id="fName" placeholder="לדוגמה: מתנה מהעבודה" required>
+    </div>
+    <div class="row2">
+      <div class="field" id="wrapCard">
+        <label for="fCard">מספר כרטיס</label>
+        <input type="text" id="fCard" inputmode="numeric" dir="ltr" placeholder="16 ספרות">
+      </div>
+      <div class="field" id="wrapPhone">
+        <label for="fPhone">טלפון לבירור יתרה</label>
+        <input type="tel" id="fPhone" dir="ltr" placeholder="05XXXXXXXX" pattern="0\d{8,9}">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="fInitial">סכום מקורי (₪)</label>
+        <input type="number" id="fInitial" min="0" step="0.01" dir="ltr" required>
+      </div>
+      <div class="field">
+        <label for="fBalance">יתרה נוכחית (₪)</label>
+        <input type="number" id="fBalance" min="0" step="0.01" dir="ltr" placeholder="ריק = כמו הסכום המקורי">
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label for="fExpiry">תוקף</label>
+        <input type="date" id="fExpiry">
+      </div>
+      <div class="field" id="wrapPin">
+        <label for="fPin">קוד / PIN <span class="hint">(אופציונלי)</span></label>
+        <input type="text" id="fPin" dir="ltr">
+      </div>
+    </div>
+    <div class="field" id="wrapUrl" hidden>
+      <label for="fUrl">קישור לבירור יתרה</label>
+      <input type="url" id="fUrl" dir="ltr" placeholder="https://…">
+    </div>
+    <div class="field">
+      <label for="fNotes">הערות</label>
+      <textarea id="fNotes" placeholder="איפה אפשר לממש, ממי קיבלנו…"></textarea>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn ghost" value="cancel" type="submit">ביטול</button>
+    <button class="btn primary" value="save" type="submit" id="btnSaveCoupon">שמירה</button>
+  </div>
+</form></dialog>
+
+<dialog id="dlgUsage"><form method="dialog" class="modal" id="usageForm">
+  <div class="modal-head"><h2>רישום שימוש</h2>
+    <button class="btn icon ghost" value="cancel" type="submit" aria-label="סגור">✕</button></div>
+  <div class="modal-body">
+    <div id="usageCouponInfo"></div>
+    <div class="field">
+      <label for="uAmount">סכום שנוצל (₪)</label>
+      <input type="number" id="uAmount" min="0.01" step="0.01" dir="ltr" required>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <button type="button" class="btn sm ghost" data-quick="50">50</button>
+        <button type="button" class="btn sm ghost" data-quick="100">100</button>
+        <button type="button" class="btn sm ghost" data-quick="200">200</button>
+        <button type="button" class="btn sm soft" data-quick="all">כל היתרה</button>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="uDate">תאריך</label><input type="date" id="uDate" required></div>
+      <div class="field"><label for="uPlace">איפה</label><input type="text" id="uPlace" placeholder="שם החנות"></div>
+    </div>
+    <div class="field"><label for="uNote">הערה</label><input type="text" id="uNote"></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn ghost" value="cancel" type="submit">ביטול</button>
+    <button class="btn primary" value="save" type="submit">רישום</button>
+  </div>
+</form></dialog>
+
+<dialog id="dlgDetails"><div class="modal">
+  <div class="modal-head"><h2 id="detTitle">פרטי קופון</h2>
+    <button class="btn icon ghost" data-close aria-label="סגור">✕</button></div>
+  <div class="modal-body" id="detBody"></div>
+  <div class="modal-foot" id="detFoot"></div>
+</div></dialog>
+
+<dialog id="dlgCheck"><div class="modal">
+  <div class="modal-head"><h2>בדיקת יתרה אוטומטית</h2>
+    <button class="btn icon ghost" data-close aria-label="סגור">✕</button></div>
+  <div class="modal-body" id="checkBody"></div>
+  <div class="modal-foot" id="checkFoot"></div>
+</div></dialog>
+
+<dialog id="dlgBot"><form method="dialog" class="modal">
+  <div class="modal-head"><h2>עוזר בדיקת היתרה</h2>
+    <button class="btn icon ghost" value="cancel" type="submit" aria-label="סגור">✕</button></div>
+  <div class="modal-body">
+    <div id="botStatusBox"></div>
+    <div class="field">
+      <label for="botUrl">כתובת העוזר המקומי</label>
+      <input type="url" id="botUrl" dir="ltr" placeholder="http://127.0.0.1:8787">
+      <div class="hint">העוזר רץ על המחשב שלך ומפעיל דפדפן אמיתי מול אתרי הספקים.</div>
+    </div>
+    <div class="field">
+      <label for="botToken">מפתח חיבור <span class="hint">(מוצג בחלון הפקודה של העוזר)</span></label>
+      <input type="text" id="botToken" dir="ltr" placeholder="נמלא אוטומטית בעת חיבור">
+    </div>
+    <div class="callout">
+      להפעלת העוזר, פתחו חלון פקודה בתיקיית <b>balance-bot</b> והריצו:
+      <code>npm install
+npx playwright install chromium
+npm start</code>
+    </div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn ghost" value="cancel" type="submit">סגירה</button>
+    <button class="btn primary" value="save" type="submit" id="btnSaveBot">שמירה ובדיקת חיבור</button>
+  </div>
+</form></dialog>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+/* ==========================================================================
+   הגדרות — למלא לאחר הפריסה
+   ========================================================================== */
+const CONFIG = {
+  // Google Cloud Console -> Credentials -> OAuth Client ID (Web application)
+  CLIENT_ID: '431204508277-nm33th0fs73s81cpn09ngmmalmbvgso1.apps.googleusercontent.com',
+
+  // כתובת ה-Web App של Apps Script (מסתיימת ב-/exec)
+  GAS_URL: 'https://script.google.com/macros/s/AKfycbxmSdgnvqphR66rhOxhHNz_zph551N7h_lMn8tLf03hWDQaqv_-hb49bKG0dROclw5UBg/exec',
+
+  // תצוגה בלבד. ההרשאה האמיתית נאכפת בשרת (Code.gs).
+  ALLOWED_EMAILS: ['tamir.tsricker@gmail.com', 'hilabendor312@gmail.com'],
+
+  BOT_URL: 'http://127.0.0.1:8787'
+};
+
+const PROVIDERS = {
+  praxell:   { label:'פראקסל',   color:'#0079c2', auto:true,  needs:['phone'],
+               url:'https://www.praxellpayroll.com/cardbalance/giftcardgeneral.php' },
+  multipass: { label:'מולטיפאס', color:'#7c3aed', auto:true,  needs:['cardNumber'],
+               url:'https://multipass.co.il/GetBalance' },
+  other:     { label:'אחר',       color:'#64748b', auto:false, needs:[] }
+};
+
+/* ==========================================================================
+   State
+   ========================================================================== */
+const S = {
+  idToken:'', user:null,
+  coupons:[], usage:[], checks:[],
+  view:'active', q:'', provider:'',
+  loading:false,
+  bot:{ url: localStorage.getItem('cp_bot_url') || CONFIG.BOT_URL,
+        token: localStorage.getItem('cp_bot_token') || '',
+        online:false, version:'' },
+  job:null
+};
+
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const money = n => new Intl.NumberFormat('he-IL',{style:'currency',currency:'ILS',
+                     minimumFractionDigits:0, maximumFractionDigits:2}).format(Number(n)||0);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = ()=> new Date().toISOString().slice(0,10);
+const daysTo = d => d ? Math.ceil((new Date(d+'T00:00:00') - new Date(today()+'T00:00:00'))/864e5) : null;
+
+function toast(msg, kind='ok', ms=3200){
+  const el = document.createElement('div');
+  el.className = 'toast ' + kind;
+  el.textContent = msg;
+  $('#toasts').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(8px)';
+                   el.style.transition='.25s'; setTimeout(()=>el.remove(),260); }, ms);
+}
+
+/* ==========================================================================
+   Theme
+   ========================================================================== */
+(function initTheme(){
+  const saved = localStorage.getItem('cp_theme');
+  const dark = saved ? saved==='dark'
+                     : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+})();
+function toggleTheme(){
+  const dark = document.documentElement.dataset.theme !== 'dark';
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  localStorage.setItem('cp_theme', dark ? 'dark' : 'light');
+  $('#btnTheme').textContent = dark ? '☀️' : '🌙';
+}
+
+/* ==========================================================================
+   Auth (Google Identity Services)
+   ========================================================================== */
+function decodeJwt(t){
+  try{
+    const p = t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    return JSON.parse(decodeURIComponent(escape(atob(p))));
+  }catch(e){ return null; }
+}
+
+function bootAuth(){
+  if(!window.google?.accounts?.id) return setTimeout(bootAuth, 120);
+  if(CONFIG.CLIENT_ID.includes('PASTE_YOUR')){
+    showLoginError('חסר Google Client ID בקובץ. ראו את README.md.');
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: CONFIG.CLIENT_ID,
+    callback: onCredential,
+    auto_select: true,
+    cancel_on_tap_outside: false
+  });
+  google.accounts.id.renderButton($('#gbtn'), {
+    theme: document.documentElement.dataset.theme==='dark' ? 'filled_black' : 'outline',
+    size:'large', shape:'pill', text:'signin_with', locale:'he', width:300
+  });
+  const cached = sessionStorage.getItem('cp_token');
+  if(cached){
+    const p = decodeJwt(cached);
+    if(p && p.exp*1000 > Date.now()+60000){ onCredential({credential:cached}); return; }
+    sessionStorage.removeItem('cp_token');
+  }
+  google.accounts.id.prompt();
+}
+
+function showLoginError(msg){
+  const el = $('#loginError'); el.textContent = msg; el.hidden = false;
+}
+
+async function onCredential(resp){
+  const token = resp.credential;
+  const payload = decodeJwt(token);
+  if(!payload) return showLoginError('טוקן לא תקין.');
+
+  const email = String(payload.email||'').toLowerCase();
+  if(!CONFIG.ALLOWED_EMAILS.map(e=>e.toLowerCase()).includes(email)){
+    showLoginError(`החשבון ${email} אינו מורשה לפורטל הזה.`);
+    return;
+  }
+  S.idToken = token;
+  S.user = { email, name: payload.name || email, picture: payload.picture || '' };
+  sessionStorage.setItem('cp_token', token);
+
+  // התנתקות אוטומטית לפני פקיעת הטוקן
+  const msLeft = payload.exp*1000 - Date.now() - 30000;
+  if(msLeft > 0) setTimeout(()=>logout('פג תוקף ההתחברות, יש להתחבר שוב.'), msLeft);
+
+  $('#login').hidden = true;
+  $('#app').hidden = false;
+  $('#userName').textContent = S.user.name.split(' ')[0];
+  if(S.user.picture) $('#userPic').src = S.user.picture;
+
+  await loadAll();
+  pingBot();
+}
+
+function logout(msg){
+  sessionStorage.removeItem('cp_token');
+  S.idToken=''; S.user=null;
+  try{ google.accounts.id.disableAutoSelect(); }catch(e){}
+  $('#app').hidden = true;
+  $('#login').hidden = false;
+  if(msg) showLoginError(msg);
+}
+
+/* ==========================================================================
+   API
+   ========================================================================== */
+async function api(type, payload={}){
+  if(CONFIG.GAS_URL.includes('PASTE_YOUR')) throw new Error('חסרה כתובת שרת (GAS_URL)');
+  const res = await fetch(CONFIG.GAS_URL, {
+    method:'POST',
+    // text/plain שומר על "simple request" - בלי preflight ש-Apps Script לא עונה לו
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify({ type, idToken:S.idToken, ...payload })
+  });
+  const text = await res.text();
+  let data;
+  try{ data = JSON.parse(text); }
+  catch(e){ throw new Error('תשובה לא צפויה מהשרת'); }
+  if(!data.ok){
+    if(['unauthorized','expired_token','invalid_token','no_token'].includes(data.error)){
+      logout('ההתחברות פגה. יש להתחבר מחדש.');
+    }
+    throw new Error(errText(data.error));
+  }
+  return data;
+}
+
+function errText(code){
+  return ({
+    not_allowed:'החשבון הזה לא מורשה.',
+    server_not_configured:'השרת לא הוגדר (חסר Client ID ב-Code.gs).',
+    coupon_not_found:'הקופון לא נמצא.',
+    bad_amount:'סכום לא תקין.',
+    busy:'השרת עסוק, נסו שוב בעוד רגע.'
+  })[code] || ('שגיאה: ' + code);
+}
+
+async function loadAll(){
+  S.loading = true; render();
+  try{
+    const d = await api('bootstrap');
+    S.coupons = d.coupons || [];
+    S.usage   = d.usage   || [];
+    S.checks  = d.checks  || [];
+    localStorage.setItem('cp_cache', JSON.stringify({coupons:S.coupons, usage:S.usage}));
+  }catch(e){
+    toast(e.message,'err',5000);
+    const c = localStorage.getItem('cp_cache');
+    if(c && !S.coupons.length){
+      const d = JSON.parse(c); S.coupons=d.coupons||[]; S.usage=d.usage||[];
+      toast('מוצגים נתונים מהמטמון המקומי','err');
+    }
+  }finally{
+    S.loading = false; render();
+  }
+}
+
+/* ==========================================================================
+   Render
+   ========================================================================== */
+function provOf(c){ return PROVIDERS[c.provider] || PROVIDERS.other; }
+function provLabel(c){ return c.provider==='other' && c.providerName ? c.providerName : provOf(c).label; }
+function usageOf(id){ return S.usage.filter(u=>u.couponId===id)
+                       .sort((a,b)=> (b.date||'').localeCompare(a.date||'')); }
+function maskCard(n){
+  n = String(n||'').replace(/\s/g,'');
+  return n.length > 4 ? '•••• ' + n.slice(-4) : n;
+}
+
+function render(){
+  renderStats();
+  renderFilters();
+  renderGrid();
+  renderBotChip();
+}
+
+function renderStats(){
+  const active = S.coupons.filter(c=>c.status==='active');
+  const total  = active.reduce((s,c)=>s+Number(c.balance||0),0);
+  const spent  = S.usage.reduce((s,u)=>s+Number(u.amount||0),0);
+  const soon   = active.filter(c=>{ const d=daysTo(c.expiry); return d!==null && d<=30 && d>=0; });
+  const arch   = S.coupons.filter(c=>c.status!=='active').length;
+  $('#stats').innerHTML = `
+    <div class="stat"><div class="k">💰 יתרה כוללת</div><div class="v">${money(total)}</div>
+      <div class="s">ב-${active.length} קופונים פעילים</div></div>
+    <div class="stat g2"><div class="k">🧾 נוצל עד היום</div><div class="v">${money(spent)}</div>
+      <div class="s">${S.usage.length} רישומי שימוש</div></div>
+    <div class="stat g3"><div class="k">⏳ פג תוקף בקרוב</div><div class="v">${soon.length}</div>
+      <div class="s">${soon.length ? soon.map(c=>esc(c.name)).slice(0,2).join(' · ') : 'אין קופונים דחופים'}</div></div>
+    <div class="stat g4"><div class="k">📦 בהיסטוריה</div><div class="v">${arch}</div>
+      <div class="s">קופונים שנוצלו</div></div>`;
+}
+
+function renderFilters(){
+  const sel = $('#filterProvider');
+  if(sel.dataset.built) return;
+  sel.dataset.built = '1';
+  sel.innerHTML = '<option value="">כל הספקים</option>' +
+    Object.entries(PROVIDERS).map(([k,p])=>`<option value="${k}">${p.label}</option>`).join('');
+}
+
+function renderGrid(){
+  const grid = $('#grid');
+  if(S.loading && !S.coupons.length){
+    grid.innerHTML = Array(6).fill('<div class="skeleton"></div>').join('');
+    return;
+  }
+  const q = S.q.trim().toLowerCase();
+  let list = S.coupons.filter(c=>{
+    const inView = S.view==='active' ? c.status==='active' : c.status!=='active';
+    if(!inView) return false;
+    if(S.provider && c.provider!==S.provider) return false;
+    if(q){
+      const hay = [c.name, c.providerName, provLabel(c), c.notes, c.cardNumber].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  list.sort((a,b)=>{
+    if(S.view==='active'){
+      const da = daysTo(a.expiry), db = daysTo(b.expiry);
+      if(da!==null && db!==null && da!==db) return da-db;
+      if(da!==null && db===null) return -1;
+      if(db!==null && da===null) return 1;
+      return Number(b.balance||0)-Number(a.balance||0);
+    }
+    return String(b.archivedAt||'').localeCompare(String(a.archivedAt||''));
+  });
+
+  if(!list.length){
+    grid.innerHTML = S.view==='active'
+      ? `<div class="empty" style="grid-column:1/-1"><div class="em">🎟️</div>
+           <h3>אין כאן קופונים עדיין</h3><p>הוסיפו את הקופון הראשון כדי להתחיל לעקוב אחרי היתרות.</p>
+           <button class="btn primary" onclick="openCoupon()">＋ קופון חדש</button></div>`
+      : `<div class="empty" style="grid-column:1/-1"><div class="em">📦</div>
+           <h3>ההיסטוריה ריקה</h3><p>קופונים שהיתרה בהם תתאפס יעברו לכאן אוטומטית.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(cardHtml).join('');
+}
+
+function cardHtml(c){
+  const p = provOf(c);
+  const init = Number(c.initialAmount||0);
+  const bal  = Number(c.balance||0);
+  const pct  = init>0 ? Math.max(0, Math.min(100, bal/init*100)) : (bal>0?100:0);
+  const d    = daysTo(c.expiry);
+  const archived = c.status !== 'active';
+
+  const chips = [];
+  if(d!==null){
+    if(d<0)        chips.push(`<span class="chip danger">⏰ פג תוקף</span>`);
+    else if(d<=14) chips.push(`<span class="chip danger">⏰ ${d} ימים לתוקף</span>`);
+    else if(d<=45) chips.push(`<span class="chip warn">⏰ ${d} ימים לתוקף</span>`);
+    else           chips.push(`<span class="chip">תוקף ${c.expiry.split('-').reverse().join('/')}</span>`);
+  }
+  if(c.lastCheckedAt) chips.push(`<span class="chip ok">✓ נבדק ${relTime(c.lastCheckedAt)}</span>`);
+  const uc = usageOf(c.id).length;
+  if(uc) chips.push(`<span class="chip">${uc} שימושים</span>`);
+
+  return `
+  <article class="card ${archived?'archived':''}" style="--pc:${p.color}">
+    <div class="strip"></div>
+    <div class="card-body">
+      <div class="card-head">
+        <div class="provider-badge">${esc(provLabel(c).slice(0,2))}</div>
+        <div class="card-title">
+          <h3>${esc(c.name||'ללא שם')}</h3>
+          <div class="sub">${esc(provLabel(c))}${c.cardNumber?' · '+esc(maskCard(c.cardNumber)):''}</div>
+        </div>
+        <button class="btn icon ghost" onclick="openDetails('${c.id}')" title="פרטים">⋯</button>
+      </div>
+      <div class="balance-row">
+        <div class="balance">${money(bal)}<small> / ${money(init)}</small></div>
+      </div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="meta">${chips.join('')}</div>
+    </div>
+    <div class="card-actions">
+      ${archived
+        ? `<button class="btn sm ghost" onclick="setStatus('${c.id}','active')">↩ החזרה לפעילים</button>`
+        : `<button class="btn sm soft" onclick="openUsage('${c.id}')">💳 רישום שימוש</button>
+           <button class="btn sm ghost" onclick="openCheck('${c.id}')">🔍 בדיקת יתרה</button>`}
+    </div>
+  </article>`;
+}
+
+function relTime(iso){
+  const diff = (Date.now() - new Date(iso).getTime())/1000;
+  if(diff < 3600) return 'עכשיו';
+  if(diff < 86400) return 'היום';
+  const d = Math.floor(diff/86400);
+  if(d===1) return 'אתמול';
+  if(d<30) return `לפני ${d} ימים`;
+  return new Date(iso).toLocaleDateString('he-IL');
+}
+
+/* ==========================================================================
+   Coupon form
+   ========================================================================== */
+let editingId = null;
+
+function openCoupon(id){
+  editingId = id || null;
+  const c = id ? S.coupons.find(x=>x.id===id) : null;
+  $('#couponTitle').textContent = c ? 'עריכת קופון' : 'קופון חדש';
+
+  const sel = $('#fProvider');
+  sel.innerHTML = Object.entries(PROVIDERS)
+    .map(([k,p])=>`<option value="${k}">${p.label}${p.auto?' — בדיקה אוטומטית':''}</option>`).join('');
+  sel.value = c?.provider || 'praxell';
+
+  $('#fProviderName').value = c?.providerName || '';
+  $('#fName').value    = c?.name || '';
+  $('#fCard').value    = c?.cardNumber || '';
+  $('#fPhone').value   = c?.phone || '';
+  $('#fInitial').value = c?.initialAmount ?? '';
+  $('#fBalance').value = c ? c.balance : '';
+  $('#fExpiry').value  = c?.expiry || '';
+  $('#fPin').value     = c?.cardPin || '';
+  $('#fUrl').value     = c?.balanceUrl || '';
+  $('#fNotes').value   = c?.notes || '';
+  syncProviderFields();
+  $('#dlgCoupon').showModal();
+}
+
+function syncProviderFields(){
+  const k = $('#fProvider').value;
+  $('#wrapProviderName').hidden = k !== 'other';
+  $('#wrapUrl').hidden = k !== 'other';
+  const needs = PROVIDERS[k]?.needs || [];
+  $('#fPhone').required = needs.includes('phone');
+  $('#fCard').required  = needs.includes('cardNumber');
+  $('#wrapPhone').querySelector('label').innerHTML =
+    'טלפון לבירור יתרה' + (needs.includes('phone') ? ' <span class="hint">(נדרש)</span>' : '');
+  $('#wrapCard').querySelector('label').innerHTML =
+    'מספר כרטיס' + (needs.includes('cardNumber') ? ' <span class="hint">(נדרש)</span>' : '');
+}
+
+$('#fProvider').addEventListener('change', syncProviderFields);
+
+$('#couponForm').addEventListener('submit', async ev=>{
+  if(ev.submitter?.value !== 'save') return;
+  ev.preventDefault();
+  const form = ev.target;
+  if(!form.checkValidity()){ form.reportValidity(); return; }
+
+  const coupon = {
+    id: editingId || undefined,
+    provider: $('#fProvider').value,
+    providerName: $('#fProviderName').value.trim(),
+    name: $('#fName').value.trim(),
+    cardNumber: $('#fCard').value.replace(/\s/g,''),
+    cardPin: $('#fPin').value.trim(),
+    phone: $('#fPhone').value.replace(/[^\d]/g,''),
+    initialAmount: Number($('#fInitial').value)||0,
+    balance: $('#fBalance').value === '' ? undefined : Number($('#fBalance').value),
+    expiry: $('#fExpiry').value,
+    notes: $('#fNotes').value.trim(),
+    balanceUrl: $('#fUrl').value.trim()
+  };
+
+  const btn = $('#btnSaveCoupon');
+  btn.disabled = true; btn.textContent = 'שומר…';
+  try{
+    const d = await api('saveCoupon', { coupon });
+    upsert(S.coupons, d.coupon);
+    render();
+    $('#dlgCoupon').close();
+    toast(editingId ? 'הקופון עודכן' : 'הקופון נוסף');
+  }catch(e){ toast(e.message,'err',5000); }
+  finally{ btn.disabled=false; btn.textContent='שמירה'; }
+});
+
+function upsert(arr, obj){
+  const i = arr.findIndex(x=>x.id===obj.id);
+  if(i>=0) arr[i] = obj; else arr.push(obj);
+}
+
+/* ==========================================================================
+   Usage
+   ========================================================================== */
+let usageCouponId = null;
+
+function openUsage(id){
+  const c = S.coupons.find(x=>x.id===id);
+  if(!c) return;
+  usageCouponId = id;
+  $('#usageCouponInfo').innerHTML =
+    `<div class="step done"><div class="n">₪</div><div class="t">
+       <b>${esc(c.name)}</b><small>יתרה נוכחית: ${money(c.balance)}</small></div></div>`;
+  $('#uAmount').value=''; $('#uDate').value = today();
+  $('#uPlace').value=''; $('#uNote').value='';
+  $('#uAmount').max = Math.max(0.01, Number(c.balance||0));
+  $('#dlgUsage').showModal();
+  setTimeout(()=>$('#uAmount').focus(), 60);
+}
+
+$$('#usageForm [data-quick]').forEach(b=> b.addEventListener('click', ()=>{
+  const c = S.coupons.find(x=>x.id===usageCouponId);
+  $('#uAmount').value = b.dataset.quick==='all' ? Number(c?.balance||0) : b.dataset.quick;
+}));
+
+$('#usageForm').addEventListener('submit', async ev=>{
+  if(ev.submitter?.value !== 'save') return;
+  ev.preventDefault();
+  const form = ev.target;
+  if(!form.checkValidity()){ form.reportValidity(); return; }
+  try{
+    const d = await api('addUsage', {
+      couponId: usageCouponId,
+      amount: Number($('#uAmount').value),
+      date: $('#uDate').value,
+      place: $('#uPlace').value.trim(),
+      note: $('#uNote').value.trim()
+    });
+    S.usage.push(d.usage);
+    upsert(S.coupons, d.coupon);
+    render();
+    $('#dlgUsage').close();
+    toast(d.coupon.status==='archived'
+      ? 'הקופון נוצל במלואו ועבר להיסטוריה' : 'השימוש נרשם');
+  }catch(e){ toast(e.message,'err',5000); }
+});
+
+async function setStatus(id, status){
+  try{
+    const d = await api('setStatus', { id, status });
+    upsert(S.coupons, d.coupon);
+    render();
+    toast(status==='active' ? 'הקופון חזר לפעילים' : 'הקופון הועבר להיסטוריה');
+  }catch(e){ toast(e.message,'err',5000); }
+}
+
+async function deleteUsage(id){
+  if(!confirm('למחוק את רישום השימוש ולהחזיר את הסכום ליתרה?')) return;
+  try{
+    const d = await api('deleteUsage', { id });
+    S.usage = S.usage.filter(u=>u.id!==id);
+    if(d.coupon) upsert(S.coupons, d.coupon);
+    render(); openDetails(d.coupon?.id);
+    toast('רישום השימוש נמחק');
+  }catch(e){ toast(e.message,'err',5000); }
+}
+
+async function deleteCoupon(id){
+  if(!confirm('למחוק את הקופון לצמיתות? ההיסטוריה שלו תישאר בגיליון.')) return;
+  try{
+    await api('deleteCoupon', { id });
+    S.coupons = S.coupons.filter(c=>c.id!==id);
+    render(); $('#dlgDetails').close();
+    toast('הקופון נמחק');
+  }catch(e){ toast(e.message,'err',5000); }
+}
+
+/* ==========================================================================
+   Details
+   ========================================================================== */
+function openDetails(id){
+  const c = S.coupons.find(x=>x.id===id);
+  if(!c) return;
+  const list = usageOf(id);
+  const p = provOf(c);
+  $('#detTitle').textContent = c.name || 'פרטי קופון';
+  $('#detBody').innerHTML = `
+    <div class="step" style="border-color:${p.color}">
+      <div class="n" style="background:${p.color};color:#fff">₪</div>
+      <div class="t"><b>${money(c.balance)} מתוך ${money(c.initialAmount)}</b>
+      <small>${esc(provLabel(c))}${c.expiry?' · תוקף '+c.expiry.split('-').reverse().join('/'):''}</small></div>
+    </div>
+    ${c.cardNumber ? detRow('מספר כרטיס', `<span dir="ltr" style="user-select:all">${esc(c.cardNumber)}</span>`) : ''}
+    ${c.cardPin    ? detRow('קוד/PIN', `<span dir="ltr" style="user-select:all">${esc(c.cardPin)}</span>`) : ''}
+    ${c.phone      ? detRow('טלפון', `<span dir="ltr">${esc(c.phone)}</span>`) : ''}
+    ${c.notes      ? detRow('הערות', esc(c.notes)) : ''}
+    ${c.lastCheckedAt ? detRow('נבדק לאחרונה', relTime(c.lastCheckedAt)) : ''}
+    ${detRow('נוצר ע"י', esc(c.createdBy||'') + ' · ' + String(c.createdAt||'').slice(0,10))}
+    <h3 style="margin:8px 0 0;font-size:15.5px">היסטוריית שימושים (${list.length})</h3>
+    ${list.length ? `<div class="list">${list.map(u=>`
+      <div class="li">
+        <bdi class="amt">${money(-u.amount)}</bdi>
+        <div class="txt"><b>${esc(u.place||'ללא פירוט')}</b>
+          <small>${esc(u.date||'')}${u.note?' · '+esc(u.note):''} · ${esc((u.createdBy||'').split('@')[0])}</small></div>
+        <button class="btn icon ghost" onclick="deleteUsage('${u.id}')" title="מחיקה">🗑</button>
+      </div>`).join('')}</div>`
+      : `<p style="color:var(--muted);margin:4px 0">עדיין לא נרשמו שימושים.</p>`}`;
+
+  $('#detFoot').innerHTML = `
+    <button class="btn ghost" onclick="openCoupon('${c.id}')">✎ עריכה</button>
+    ${c.status==='active'
+      ? `<button class="btn ghost" onclick="setStatus('${c.id}','archived')">📦 להיסטוריה</button>`
+      : `<button class="btn ghost" onclick="setStatus('${c.id}','active')">↩ לפעילים</button>`}
+    <button class="btn danger" onclick="deleteCoupon('${c.id}')">מחיקה</button>`;
+  $('#dlgDetails').showModal();
+}
+
+function detRow(k,v){
+  return `<div style="display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line)">
+    <span style="color:var(--text-2);font-size:14px">${k}</span>
+    <span style="font-weight:600;font-size:14px;text-align:end">${v}</span></div>`;
+}
+
+/* ==========================================================================
+   Balance bot
+   ========================================================================== */
+async function botFetch(path, opts={}, ms=6000){
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), ms);
+  try{
+    const res = await fetch(S.bot.url.replace(/\/$/,'') + path, {
+      ...opts,
+      signal: ctrl.signal,
+      headers: { 'Content-Type':'text/plain;charset=utf-8',
+                 'X-Bot-Token': S.bot.token, ...(opts.headers||{}) }
+    });
+    const data = await res.json().catch(()=>({ok:false,error:'bad_response'}));
+    if(!res.ok && !data.error) data.error = 'http_' + res.status;
+    return data;
+  } finally { clearTimeout(t); }
+}
+
+async function pingBot(){
+  try{
+    const d = await botFetch('/ping', {}, 2500);
+    S.bot.online = !!d.ok;
+    S.bot.version = d.version || '';
+    if(d.token && d.token !== S.bot.token){
+      S.bot.token = d.token;
+      localStorage.setItem('cp_bot_token', d.token);
+    }
+  }catch(e){ S.bot.online = false; }
+  renderBotChip();
+  return S.bot.online;
+}
+
+function renderBotChip(){
+  const el = $('#botStatusText');
+  if(!el) return;
+  el.textContent = S.bot.online ? 'עוזר מחובר' : 'עוזר לא פעיל';
+  $('#btnBotSettings').style.color = S.bot.online ? 'var(--ok)' : '';
+}
+
+let checkCouponId = null, pollTimer = null, lastRendered = '';
+
+async function openCheck(id){
+  const c = S.coupons.find(x=>x.id===id);
+  if(!c) return;
+  checkCouponId = id;
+  S.job = null;
+  lastRendered = '';
+  $('#dlgCheck').showModal();
+  renderCheck({ phase:'connecting' }, c);
+  const online = await pingBot();
+  const p = provOf(c);
+  if(!online)          renderCheck({ phase:'offline' }, c);
+  else if(!p.auto)     renderCheck({ phase:'unsupported' }, c);
+  else                 renderCheck({ phase:'ready' }, c);
+}
+
+function renderCheck(state, coupon){
+  const c = coupon || S.coupons.find(x=>x.id===checkCouponId);
+  if(!c) return;
+  const p = provOf(c);
+  const body = $('#checkBody'), foot = $('#checkFoot');
+  const head = `<div class="step done"><div class="n">₪</div><div class="t">
+      <b>${esc(c.name)}</b><small>${esc(provLabel(c))} · יתרה שמורה: ${money(c.balance)}</small></div></div>`;
+
+  const manual = `
+    <div class="field"><label for="manualBalance">עדכון יתרה ידני (₪)</label>
+      <input type="number" id="manualBalance" min="0" step="0.01" dir="ltr" value="${Number(c.balance||0)}">
+    </div>`;
+
+  if(state.phase === 'connecting'){
+    body.innerHTML = head + `<div class="step active"><div class="n"><div class="spin"></div></div>
+      <div class="t"><b>מתחבר לעוזר המקומי…</b><small>${esc(S.bot.url)}</small></div></div>`;
+    foot.innerHTML = `<button class="btn ghost" data-close>סגירה</button>`;
+  }
+
+  else if(state.phase === 'offline'){
+    body.innerHTML = head + `
+      <div class="callout">העוזר המקומי לא רץ, ולכן אי אפשר לבצע בדיקה אוטומטית.
+        פתחו חלון פקודה בתיקיית <b>balance-bot</b> והריצו:<code>npm start</code></div>
+      ${p.url ? `<a class="btn ghost" href="${p.url}" target="_blank" rel="noopener noreferrer">
+          פתיחת אתר ${esc(p.label)} לבדיקה ידנית ↗</a>` : ''}
+      ${c.cardNumber ? `<div class="step"><div class="n">#</div><div class="t"><b>מספר הכרטיס</b>
+          <small dir="ltr" style="user-select:all">${esc(c.cardNumber)}</small></div></div>`:''}
+      ${c.phone ? `<div class="step"><div class="n">☎</div><div class="t"><b>הטלפון</b>
+          <small dir="ltr" style="user-select:all">${esc(c.phone)}</small></div></div>`:''}
+      ${manual}`;
+    foot.innerHTML = `<button class="btn ghost" onclick="openCheck('${c.id}')">נסה שוב</button>
+      <button class="btn primary" onclick="saveManualBalance()">שמירת יתרה</button>`;
+  }
+
+  else if(state.phase === 'unsupported'){
+    body.innerHTML = head + `
+      <div class="callout">אין עדיין אוטומציה לספק הזה. אפשר לעדכן את היתרה ידנית.</div>
+      ${c.balanceUrl ? `<a class="btn ghost" href="${esc(c.balanceUrl)}" target="_blank" rel="noopener noreferrer">פתיחת אתר הספק ↗</a>`:''}
+      ${manual}`;
+    foot.innerHTML = `<button class="btn ghost" data-close>ביטול</button>
+      <button class="btn primary" onclick="saveManualBalance()">שמירת יתרה</button>`;
+  }
+
+  else if(state.phase === 'ready'){
+    const needPhone = p.needs.includes('phone') && !c.phone;
+    const needCard  = p.needs.includes('cardNumber') && !c.cardNumber;
+    body.innerHTML = head + `
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div class="t"><b>העוזר יפתח דפדפן</b>
+          <small>ויזין ${p.needs.includes('phone')?'את מספר הטלפון':'את מספר הכרטיס'} באתר ${esc(p.label)}</small></div></div>
+        <div class="step"><div class="n">2</div><div class="t"><b>אישור reCAPTCHA</b>
+          <small>אם יופיע — יש לאשר בחלון הדפדפן שנפתח</small></div></div>
+        <div class="step"><div class="n">3</div><div class="t"><b>הזנת קוד ה-SMS</b>
+          <small>תקבלו SMS לנייד ותזינו את הקוד כאן</small></div></div>
+        <div class="step"><div class="n">4</div><div class="t"><b>שמירת היתרה</b>
+          <small>לאחר אישור שלכם</small></div></div>
+      </div>
+      ${needPhone ? `<div class="field"><label for="ckPhone">מספר טלפון</label>
+        <input type="tel" id="ckPhone" dir="ltr" placeholder="05XXXXXXXX"></div>`:''}
+      ${needCard ? `<div class="field"><label for="ckCard">מספר כרטיס</label>
+        <input type="text" id="ckCard" dir="ltr" inputmode="numeric" placeholder="16 ספרות"></div>`:''}`;
+    foot.innerHTML = `<button class="btn ghost" data-close>ביטול</button>
+      <button class="btn primary" onclick="startCheck()">▶ התחלת בדיקה</button>`;
+  }
+
+  else if(state.phase === 'running'){
+    const j = state.job || {};
+    const stepState = s => j.status===s ? 'active' : (stepOrder(j.status) > stepOrder(s) ? 'done' : '');
+    body.innerHTML = head + `
+      <div class="steps">
+        <div class="step ${stepState('starting')}"><div class="n">${j.status==='starting'?'<div class="spin"></div>':'1'}</div>
+          <div class="t"><b>פותח את אתר ${esc(p.label)}</b><small>מזין את הפרטים</small></div></div>
+        <div class="step ${stepState('awaiting_captcha')}"><div class="n">2</div>
+          <div class="t"><b>אישור reCAPTCHA</b><small>${j.status==='awaiting_captcha'
+            ? 'סמנו "אני לא רובוט" בחלון הדפדפן שנפתח' : 'ממתין'}</small></div></div>
+        <div class="step ${stepState('awaiting_otp')}"><div class="n">3</div>
+          <div class="t"><b>קוד אימות ב-SMS</b><small>${esc(j.message||'ממתין')}</small></div></div>
+      </div>
+      ${j.status==='awaiting_otp' ? `
+        <div class="field"><label for="otpInput">הזינו את הקוד שקיבלתם</label>
+          <input class="otp" id="otpInput" inputmode="numeric" autocomplete="one-time-code"
+                 maxlength="8" placeholder="••••••"></div>` : ''}
+      ${j.status==='error' ? `<div class="callout" style="background:var(--danger-soft);color:var(--danger)">
+          ${esc(j.message||'הבדיקה נכשלה')}</div>${manual}` : ''}`;
+
+    if(j.status==='awaiting_otp'){
+      foot.innerHTML = `<button class="btn ghost" onclick="cancelCheck()">ביטול</button>
+        <button class="btn primary" onclick="submitOtp()">אישור הקוד</button>`;
+      setTimeout(()=>$('#otpInput')?.focus(), 60);
+      $('#otpInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') submitOtp(); });
+    } else if(j.status==='error'){
+      foot.innerHTML = `<button class="btn ghost" onclick="openCheck('${c.id}')">נסה שוב</button>
+        <button class="btn primary" onclick="saveManualBalance()">שמירה ידנית</button>`;
+    } else {
+      foot.innerHTML = `<button class="btn ghost" onclick="cancelCheck()">ביטול</button>`;
+    }
+  }
+
+  else if(state.phase === 'result'){
+    const j = state.job || {};
+    body.innerHTML = head + `
+      <div class="step done"><div class="n">✓</div><div class="t">
+        <b>היתרה שנקראה מהאתר</b><small>אשרו את הסכום לפני השמירה</small></div></div>
+      <div class="field"><label for="manualBalance">יתרה (₪)</label>
+        <input type="number" id="manualBalance" min="0" step="0.01" dir="ltr"
+               value="${j.balance ?? Number(c.balance||0)}" style="font-size:22px;font-weight:700"></div>
+      ${j.raw ? `<details><summary style="cursor:pointer;color:var(--text-2);font-size:13.5px">הטקסט שנקרא מהאתר</summary>
+        <pre style="white-space:pre-wrap;font-size:12.5px;color:var(--text-2);background:var(--surface-2);
+             padding:10px;border-radius:10px;margin-top:8px;max-height:180px;overflow:auto">${esc(j.raw)}</pre></details>`:''}`;
+    foot.innerHTML = `<button class="btn ghost" data-close>ביטול</button>
+      <button class="btn primary" onclick="saveManualBalance('auto')">שמירת היתרה</button>`;
+  }
+}
+
+function stepOrder(s){
+  return ['starting','awaiting_captcha','awaiting_otp','submitting','done'].indexOf(s);
+}
+
+async function startCheck(){
+  const c = S.coupons.find(x=>x.id===checkCouponId);
+  if(!c) return;
+  const phone = $('#ckPhone')?.value.replace(/\D/g,'') || c.phone;
+  const cardNumber = $('#ckCard')?.value.replace(/\D/g,'') || c.cardNumber;
+  const p = provOf(c);
+  if(p.needs.includes('phone') && !/^0\d{8,9}$/.test(phone||''))
+    return toast('צריך מספר טלפון תקין','err');
+  if(p.needs.includes('cardNumber') && !(cardNumber||'').length)
+    return toast('צריך מספר כרטיס','err');
+
+  lastRendered = 'starting|';
+  renderCheck({ phase:'running', job:{status:'starting'} });
+  try{
+    const d = await botFetch('/check', {
+      method:'POST',
+      body: JSON.stringify({ provider:c.provider, phone, cardNumber, couponId:c.id })
+    }, 20000);
+    if(!d.ok) throw new Error(botErr(d.error));
+    S.job = { id:d.jobId, status:'starting' };
+    pollJob();
+  }catch(e){
+    renderCheck({ phase:'running', job:{status:'error', message:e.message} });
+  }
+}
+
+function botErr(code){
+  return ({
+    forbidden_origin:'העוזר חסם את הבקשה (Origin לא מורשה). הוסיפו את הכתובת ל-ALLOWED_ORIGINS.',
+    bad_token:'מפתח החיבור לעוזר שגוי. פתחו את הגדרות העוזר ובדקו שוב.',
+    unknown_provider:'העוזר לא מכיר את הספק הזה.',
+    otp_input_not_found:'לא נמצא שדה להזנת קוד ה-SMS באתר.',
+    balance_not_found:'הבדיקה הצליחה אבל לא זוהתה יתרה בטקסט.',
+    timeout:'תם הזמן. נסו שוב.'
+  })[code] || ('שגיאת עוזר: ' + (code||'לא ידועה'));
+}
+
+function pollJob(){
+  clearTimeout(pollTimer);
+  if(!S.job) return;
+  pollTimer = setTimeout(async ()=>{
+    try{
+      const d = await botFetch('/job/' + encodeURIComponent(S.job.id), {}, 8000);
+      if(!d.ok) throw new Error(botErr(d.error));
+      S.job = { ...S.job, ...d.job };
+      if(d.job.status === 'done'){
+        renderCheck({ phase:'result', job:d.job });
+        return;
+      }
+      if(d.job.status === 'error'){
+        renderCheck({ phase:'running', job:{status:'error', message: d.job.message || botErr(d.job.error)} });
+        return;
+      }
+      // רינדור מחדש רק כשמשהו באמת השתנה, אחרת המיקוד בשדה הקוד נעלם
+      const sig = d.job.status + '|' + (d.job.message||'');
+      if(sig !== lastRendered){
+        lastRendered = sig;
+        renderCheck({ phase:'running', job:d.job });
+      }
+      pollJob();
+    }catch(e){
+      renderCheck({ phase:'running', job:{status:'error', message:e.message} });
+    }
+  }, 1200);
+}
+
+async function submitOtp(){
+  const code = ($('#otpInput')?.value || '').replace(/\D/g,'');
+  if(code.length < 4) return toast('הזינו את הקוד המלא','err');
+  clearTimeout(pollTimer);
+  renderCheck({ phase:'running', job:{status:'submitting', message:'שולח את הקוד…'} });
+  try{
+    const d = await botFetch('/job/' + encodeURIComponent(S.job.id) + '/otp', {
+      method:'POST', body: JSON.stringify({ code })
+    }, 10000);
+    if(!d.ok) throw new Error(botErr(d.error));
+    pollJob();
+  }catch(e){
+    renderCheck({ phase:'running', job:{status:'error', message:e.message} });
+  }
+}
+
+async function cancelCheck(){
+  clearTimeout(pollTimer);
+  if(S.job){ botFetch('/job/'+encodeURIComponent(S.job.id)+'/cancel',{method:'POST'},4000).catch(()=>{}); }
+  S.job = null;
+  $('#dlgCheck').close();
+}
+
+async function saveManualBalance(source){
+  const val = Number($('#manualBalance')?.value);
+  if(!isFinite(val) || val < 0) return toast('סכום לא תקין','err');
+  try{
+    const d = await api('recordBalance', {
+      couponId: checkCouponId, balance: val,
+      source: source || 'manual', raw: S.job?.raw || ''
+    });
+    upsert(S.coupons, d.coupon);
+    render();
+    clearTimeout(pollTimer); S.job=null;
+    $('#dlgCheck').close();
+    toast(d.coupon.status==='archived' ? 'היתרה התאפסה — הקופון עבר להיסטוריה' : 'היתרה עודכנה');
+  }catch(e){ toast(e.message,'err',5000); }
+}
+
+/* ==========================================================================
+   Wiring
+   ========================================================================== */
+$('#btnAdd').addEventListener('click', ()=>openCoupon());
+$('#btnRefresh').addEventListener('click', loadAll);
+$('#btnTheme').addEventListener('click', toggleTheme);
+$('#btnLogout').addEventListener('click', ()=>logout());
+$('#q').addEventListener('input', e=>{ S.q = e.target.value; renderGrid(); });
+$('#filterProvider').addEventListener('change', e=>{ S.provider = e.target.value; renderGrid(); });
+$$('.tabs button').forEach(b=> b.addEventListener('click', ()=>{
+  $$('.tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+  b.setAttribute('aria-selected','true');
+  S.view = b.dataset.view;
+  renderGrid();
+}));
+
+$('#btnBotSettings').addEventListener('click', async ()=>{
+  $('#botUrl').value = S.bot.url;
+  $('#botToken').value = S.bot.token;
+  $('#botStatusBox').innerHTML = `<div class="step"><div class="n"><div class="spin"></div></div>
+    <div class="t"><b>בודק חיבור…</b></div></div>`;
+  $('#dlgBot').showModal();
+  const ok = await pingBot();
+  $('#botToken').value = S.bot.token;
+  $('#botStatusBox').innerHTML = ok
+    ? `<div class="step done"><div class="n">✓</div><div class="t"><b>העוזר מחובר</b>
+        <small>גרסה ${esc(S.bot.version)}</small></div></div>`
+    : `<div class="step error"><div class="n">!</div><div class="t"><b>העוזר לא מגיב</b>
+        <small>ודאו ש-npm start רץ בתיקיית balance-bot</small></div></div>`;
+});
+
+$('#dlgBot').addEventListener('submit', async ev=>{
+  if(ev.submitter?.value !== 'save') return;
+  S.bot.url = $('#botUrl').value.trim() || CONFIG.BOT_URL;
+  S.bot.token = $('#botToken').value.trim();
+  localStorage.setItem('cp_bot_url', S.bot.url);
+  localStorage.setItem('cp_bot_token', S.bot.token);
+  setTimeout(async ()=>{
+    const ok = await pingBot();
+    toast(ok ? 'העוזר מחובר' : 'לא הצלחנו להתחבר לעוזר', ok?'ok':'err');
+  }, 50);
+});
+
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('[data-close]');
+  if(btn){ btn.closest('dialog')?.close(); }
+});
+$('#dlgCheck').addEventListener('close', ()=>{ clearTimeout(pollTimer); });
+
+$('#btnTheme').textContent = document.documentElement.dataset.theme==='dark' ? '☀️' : '🌙';
+bootAuth();
+</script>
+</body>
+</html>
