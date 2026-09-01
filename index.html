@@ -755,14 +755,44 @@ function render(){
 }
 
 function renderStats(){
-  const active = S.coupons.filter(c=>c.status==='active');
-  const total  = active.reduce((s,c)=>s+Number(c.balance||0),0);
-  const soon   = active.filter(c=>{ const d=daysTo(c.expiry); return d!==null && d<=30 && d>=0; });
+  const list = visibleCoupons();
+  const total = list.reduce((s,c)=>s+Number(c.balance||0),0);
+  const soon  = list.filter(c=>{ const d=daysTo(c.expiry); return d!==null && d<=30 && d>=0; });
+  const filtered = isFiltered();
+  const label = filtered ? `ב-${list.length} קופונים מסוננים`
+              : S.view==='active' ? `ב-${list.length} קופונים פעילים`
+              : `ב-${list.length} קופונים בהיסטוריה`;
   $('#stats').innerHTML = `
-    <div class="stat"><div class="k">💰 יתרה כוללת</div><div class="v">${money(total)}</div>
-      <div class="s">ב-${active.length} קופונים פעילים</div></div>
+    <div class="stat"><div class="k">💰 ${filtered ? 'יתרה מסוננת' : 'יתרה כוללת'}</div>
+      <div class="v">${money(total)}</div>
+      <div class="s">${label}</div></div>
     <div class="stat g3"><div class="k">⏳ פג תוקף בקרוב</div><div class="v">${soon.length}</div>
       <div class="s">${soon.length ? soon.map(c=>esc(c.name)).slice(0,2).join(' · ') : 'אין קופונים דחופים'}</div></div>`;
+}
+
+/** הקופונים שמוצגים כרגע — לפי לשונית, חיפוש וספק. */
+function visibleCoupons(){
+  const q = S.q.trim().toLowerCase();
+  return S.coupons.filter(c=>{
+    const inView = S.view==='active' ? c.status==='active' : c.status!=='active';
+    if(!inView) return false;
+    if(S.provider && c.provider!==S.provider) return false;
+    if(q){
+      const hay = [c.name, c.providerName, provLabel(c), c.notes, c.cardNumber].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+const isFiltered = ()=> !!(S.q.trim() || S.provider);
+
+function applyFilters(){ renderStats(); renderGrid(); }
+
+function clearFilters(){
+  S.q = ''; S.provider = '';
+  $('#q').value = ''; $('#filterProvider').value = '';
+  applyFilters();
 }
 
 function renderFilters(){
@@ -780,16 +810,7 @@ function renderGrid(){
     return;
   }
   const q = S.q.trim().toLowerCase();
-  let list = S.coupons.filter(c=>{
-    const inView = S.view==='active' ? c.status==='active' : c.status!=='active';
-    if(!inView) return false;
-    if(S.provider && c.provider!==S.provider) return false;
-    if(q){
-      const hay = [c.name, c.providerName, provLabel(c), c.notes, c.cardNumber].join(' ').toLowerCase();
-      if(!hay.includes(q)) return false;
-    }
-    return true;
-  });
+  let list = visibleCoupons();
 
   list.sort((a,b)=>{
     if(S.view==='active'){
@@ -805,6 +826,12 @@ function renderGrid(){
   });
 
   if(!list.length){
+    if(isFiltered()){
+      grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="em">🔍</div>
+        <h3>אין תוצאות</h3><p>אין קופון שמתאים לסינון הנוכחי.</p>
+        <button class="btn ghost" onclick="clearFilters()">ניקוי הסינון</button></div>`;
+      return;
+    }
     grid.innerHTML = S.view==='active'
       ? `<div class="empty" style="grid-column:1/-1"><div class="em">🎟️</div>
            <h3>אין כאן קופונים עדיין</h3><p>הוסיפו את הקופון הראשון כדי להתחיל לעקוב אחרי היתרות.</p>
@@ -1489,13 +1516,13 @@ async function saveManualBalance(source){
 $('#btnAdd').addEventListener('click', ()=>openCoupon());
 $('#btnRefresh').addEventListener('click', loadAll);
 $('#btnLogout').addEventListener('click', ()=>logout());
-$('#q').addEventListener('input', e=>{ S.q = e.target.value; renderGrid(); });
-$('#filterProvider').addEventListener('change', e=>{ S.provider = e.target.value; renderGrid(); });
+$('#q').addEventListener('input', e=>{ S.q = e.target.value; applyFilters(); });
+$('#filterProvider').addEventListener('change', e=>{ S.provider = e.target.value; applyFilters(); });
 $$('.tabs button').forEach(b=> b.addEventListener('click', ()=>{
   $$('.tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
   b.setAttribute('aria-selected','true');
   S.view = b.dataset.view;
-  renderGrid();
+  applyFilters();
 }));
 
 $('#btnBotSettings').addEventListener('click', async ()=>{
