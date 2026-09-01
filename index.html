@@ -121,6 +121,11 @@ input::placeholder,textarea::placeholder{color:var(--muted)}
   padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:600;
   background:var(--surface-3);color:var(--text-2);
 }
+.linkbtn{
+  align-self:flex-start;font-size:12.5px;font-weight:600;color:var(--primary);
+  padding:2px 0;margin-top:2px;
+}
+.linkbtn:hover{text-decoration:underline}
 .chip.ok{background:var(--ok-soft);color:var(--ok)}
 .chip.warn{background:var(--warn-soft);color:var(--warn)}
 .chip.danger{background:var(--danger-soft);color:var(--danger)}
@@ -413,7 +418,7 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
 <!-- ============================ MODALS ============================ -->
 <dialog id="dlgCoupon"><form method="dialog" class="modal" id="couponForm">
   <div class="modal-head"><h2 id="couponTitle">קופון חדש</h2>
-    <button class="btn icon ghost" value="cancel" type="submit" aria-label="סגור">✕</button></div>
+    <button class="btn icon ghost" value="cancel" type="submit" formnovalidate aria-label="סגור">✕</button></div>
   <div class="modal-body">
     <div class="field">
       <label for="fProvider">ספק</label>
@@ -427,15 +432,15 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
       <label for="fName">כינוי לקופון</label>
       <input type="text" id="fName" placeholder="לדוגמה: מתנה מהעבודה" required>
     </div>
-    <div class="row2">
-      <div class="field" id="wrapCard">
-        <label for="fCard">מספר כרטיס</label>
-        <input type="text" id="fCard" inputmode="numeric" dir="ltr" placeholder="16 ספרות">
-      </div>
-      <div class="field" id="wrapPhone">
-        <label for="fPhone">טלפון לבירור יתרה</label>
-        <input type="tel" id="fPhone" dir="ltr" placeholder="05XXXXXXXX" pattern="0\d{8,9}">
-      </div>
+    <div class="field" id="wrapCard">
+      <label for="fCard">מספר כרטיס</label>
+      <input type="text" id="fCard" inputmode="numeric" dir="ltr" placeholder="16 ספרות">
+      <button type="button" class="linkbtn" id="btnOtherPhone">☎ בירור היתרה מטלפון אחר</button>
+    </div>
+    <div class="field" id="wrapPhone" hidden>
+      <label for="fPhone">טלפון לבירור יתרה</label>
+      <input type="tel" id="fPhone" dir="ltr" placeholder="05XXXXXXXX" pattern="0\d{8,9}">
+      <div class="hint" id="defPhoneHint"></div>
     </div>
     <div class="row2">
       <div class="field">
@@ -467,14 +472,14 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
     </div>
   </div>
   <div class="modal-foot">
-    <button class="btn ghost" value="cancel" type="submit">ביטול</button>
+    <button class="btn ghost" value="cancel" type="submit" formnovalidate>ביטול</button>
     <button class="btn primary" value="save" type="submit" id="btnSaveCoupon">שמירה</button>
   </div>
 </form></dialog>
 
 <dialog id="dlgUsage"><form method="dialog" class="modal" id="usageForm">
   <div class="modal-head"><h2>רישום שימוש</h2>
-    <button class="btn icon ghost" value="cancel" type="submit" aria-label="סגור">✕</button></div>
+    <button class="btn icon ghost" value="cancel" type="submit" formnovalidate aria-label="סגור">✕</button></div>
   <div class="modal-body">
     <div id="usageCouponInfo"></div>
     <div class="field">
@@ -494,7 +499,7 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
     <div class="field"><label for="uNote">הערה</label><input type="text" id="uNote"></div>
   </div>
   <div class="modal-foot">
-    <button class="btn ghost" value="cancel" type="submit">ביטול</button>
+    <button class="btn ghost" value="cancel" type="submit" formnovalidate>ביטול</button>
     <button class="btn primary" value="save" type="submit">רישום</button>
   </div>
 </form></dialog>
@@ -515,7 +520,7 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
 
 <dialog id="dlgBot"><form method="dialog" class="modal">
   <div class="modal-head"><h2>עוזר בדיקת היתרה</h2>
-    <button class="btn icon ghost" value="cancel" type="submit" aria-label="סגור">✕</button></div>
+    <button class="btn icon ghost" value="cancel" type="submit" formnovalidate aria-label="סגור">✕</button></div>
   <div class="modal-body">
     <div id="botStatusBox"></div>
     <div class="field">
@@ -535,7 +540,7 @@ npm start</code>
     </div>
   </div>
   <div class="modal-foot">
-    <button class="btn ghost" value="cancel" type="submit">סגירה</button>
+    <button class="btn ghost" value="cancel" type="submit" formnovalidate>סגירה</button>
     <button class="btn primary" value="save" type="submit" id="btnSaveBot">שמירה ובדיקת חיבור</button>
   </div>
 </form></dialog>
@@ -553,7 +558,10 @@ const CONFIG = {
   GAS_URL: 'https://script.google.com/macros/s/AKfycbxmSdgnvqphR66rhOxhHNz_zph551N7h_lMn8tLf03hWDQaqv_-hb49bKG0dROclw5UBg/exec',
 
   // תצוגה בלבד. ההרשאה האמיתית נאכפת בשרת (Code.gs).
-  ALLOWED_EMAILS: ['tamir.tsricker@gmail.com', 'nut.cr4ck3r.pro@gmail.com', 'hilabendor312@gmail.com'],
+  ALLOWED_EMAILS: ['tamir.tsricker@gmail.com', 'hilabendor312@gmail.com'],
+
+  // הטלפון שמשמש לבירור יתרה בכל הקופונים (ניתן לדרוס לקופון בודד)
+  DEFAULT_PHONE: '0585710710',
 
   BOT_URL: 'http://127.0.0.1:8787'
 };
@@ -903,13 +911,18 @@ function openCoupon(id){
   $('#fProviderName').value = c?.providerName || '';
   $('#fName').value    = c?.name || '';
   $('#fCard').value    = c?.cardNumber || '';
-  $('#fPhone').value   = c?.phone || '';
   $('#fInitial').value = c?.initialAmount ?? '';
   $('#fBalance').value = c ? c.balance : '';
   $('#fExpiry').value  = c?.expiry || '';
   $('#fPin').value     = c?.cardPin || '';
   $('#fUrl').value     = c?.balanceUrl || '';
   $('#fNotes').value   = c?.notes || '';
+
+  const customPhone = !!(c?.phone && c.phone !== CONFIG.DEFAULT_PHONE);
+  $('#fPhone').value = c?.phone || CONFIG.DEFAULT_PHONE;
+  $('#defPhoneHint').textContent = 'ברירת המחדל: ' + CONFIG.DEFAULT_PHONE;
+  $('#wrapPhone').hidden = !customPhone;
+
   syncProviderFields();
   $('#dlgCoupon').showModal();
 }
@@ -919,13 +932,18 @@ function syncProviderFields(){
   $('#wrapProviderName').hidden = k !== 'other';
   $('#wrapUrl').hidden = k !== 'other';
   const needs = PROVIDERS[k]?.needs || [];
-  $('#fPhone').required = needs.includes('phone');
   $('#fCard').required  = needs.includes('cardNumber');
-  $('#wrapPhone').querySelector('label').innerHTML =
-    'טלפון לבירור יתרה' + (needs.includes('phone') ? ' <span class="hint">(נדרש)</span>' : '');
+  $('#btnOtherPhone').hidden = !needs.includes('phone') || !$('#wrapPhone').hidden;
   $('#wrapCard').querySelector('label').innerHTML =
     'מספר כרטיס' + (needs.includes('cardNumber') ? ' <span class="hint">(נדרש)</span>' : '');
 }
+
+$('#btnOtherPhone').addEventListener('click', ()=>{
+  $('#wrapPhone').hidden = false;
+  $('#btnOtherPhone').hidden = true;
+  $('#fPhone').focus();
+  $('#fPhone').select();
+});
 
 $('#fProvider').addEventListener('change', syncProviderFields);
 
@@ -942,7 +960,7 @@ $('#couponForm').addEventListener('submit', async ev=>{
     name: $('#fName').value.trim(),
     cardNumber: $('#fCard').value.replace(/\s/g,''),
     cardPin: $('#fPin').value.trim(),
-    phone: $('#fPhone').value.replace(/[^\d]/g,''),
+    phone: $('#fPhone').value.replace(/[^\d]/g,'') || CONFIG.DEFAULT_PHONE,
     initialAmount: Number($('#fInitial').value)||0,
     balance: $('#fBalance').value === '' ? undefined : Number($('#fBalance').value),
     expiry: $('#fExpiry').value,
