@@ -748,8 +748,8 @@ function maskCard(n){
 }
 
 function render(){
-  renderStats();
   renderFilters();
+  renderStats();
   renderGrid();
   renderBotChip();
 }
@@ -770,13 +770,16 @@ function renderStats(){
       <div class="s">${soon.length ? soon.map(c=>esc(c.name)).slice(0,2).join(' · ') : 'אין קופונים דחופים'}</div></div>`;
 }
 
+/** הקופונים שבלשונית הנוכחית, לפני חיפוש וסינון ספק. */
+function viewCoupons(){
+  return S.coupons.filter(c=> S.view==='active' ? c.status==='active' : c.status!=='active');
+}
+
 /** הקופונים שמוצגים כרגע — לפי לשונית, חיפוש וספק. */
 function visibleCoupons(){
   const q = S.q.trim().toLowerCase();
-  return S.coupons.filter(c=>{
-    const inView = S.view==='active' ? c.status==='active' : c.status!=='active';
-    if(!inView) return false;
-    if(S.provider && c.provider!==S.provider) return false;
+  return viewCoupons().filter(c=>{
+    if(S.provider && filterKey(c) !== S.provider) return false;
     if(q){
       const hay = [c.name, c.providerName, provLabel(c), c.notes, c.cardNumber].join(' ').toLowerCase();
       if(!hay.includes(q)) return false;
@@ -787,7 +790,7 @@ function visibleCoupons(){
 
 const isFiltered = ()=> !!(S.q.trim() || S.provider);
 
-function applyFilters(){ renderStats(); renderGrid(); }
+function applyFilters(){ renderFilters(); renderStats(); renderGrid(); }
 
 function clearFilters(){
   S.q = ''; S.provider = '';
@@ -795,12 +798,32 @@ function clearFilters(){
   applyFilters();
 }
 
+/**
+ * רשימת הספקים נבנית מהקופונים שבלשונית הנוכחית, כולל שמות ספקים
+ * חופשיים שהוקלדו תחת "אחר".
+ */
 function renderFilters(){
   const sel = $('#filterProvider');
-  if(sel.dataset.built) return;
-  sel.dataset.built = '1';
-  sel.innerHTML = '<option value="">כל הספקים</option>' +
-    Object.entries(PROVIDERS).map(([k,p])=>`<option value="${k}">${p.label}</option>`).join('');
+  const inView = viewCoupons();
+  const groups = new Map();
+  inView.forEach(c=>{
+    const k = filterKey(c);
+    const g = groups.get(k) || { key:k, label:provLabel(c), n:0 };
+    g.n++; groups.set(k, g);
+  });
+
+  if(S.provider && !groups.has(S.provider)) S.provider = '';
+
+  const opts = [...groups.values()].sort((a,b)=> a.label.localeCompare(b.label,'he'));
+  sel.innerHTML = `<option value="">כל הספקים (${inView.length})</option>` +
+    opts.map(o=>`<option value="${esc(o.key)}">${esc(o.label)} (${o.n})</option>`).join('');
+  sel.value = S.provider;
+}
+
+/** מפתח סינון: ספק ידוע, או שם חופשי כשהספק הוא "אחר". */
+function filterKey(c){
+  return c.provider === 'other' && c.providerName
+    ? 'n:' + c.providerName : 'p:' + c.provider;
 }
 
 function renderGrid(){
