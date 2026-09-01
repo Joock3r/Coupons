@@ -2,8 +2,8 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light dark">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="color-scheme" content="light">
 <title>הקופונים שלנו</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,33 +37,14 @@
   --shadow-3:0 10px 40px rgba(15,23,42,.16);
   --ring:0 0 0 4px rgba(79,70,229,.15);
 }
-html[data-theme="dark"]{
-  --bg:#0b1020;
-  --surface:#141a2e;
-  --surface-2:#1a2138;
-  --surface-3:#232b45;
-  --text:#e8ecf7;
-  --text-2:#a9b3cc;
-  --muted:#6d7898;
-  --line:#26304c;
-  --line-strong:#33405f;
-  --primary:#7c8cff;
-  --primary-2:#a78bfa;
-  --primary-soft:#1e2547;
-  --ok:#2dd4bf;
-  --ok-soft:#102c2c;
-  --warn:#fbbf24;
-  --warn-soft:#33270e;
-  --danger:#fb7185;
-  --danger-soft:#3a1421;
-  --shadow-1:0 1px 2px rgba(0,0,0,.3);
-  --shadow-2:0 2px 8px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.35);
-  --shadow-3:0 10px 44px rgba(0,0,0,.55);
-  --ring:0 0 0 4px rgba(124,140,255,.22);
-}
 
 *{box-sizing:border-box}
-html,body{height:100%}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{
+  height:100%;max-width:100%;
+  overflow-x:hidden;                 /* בלי גרירה הצידה במובייל */
+  overscroll-behavior-x:none;
+}
 body{
   margin:0;
   font-family:'Heebo',system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
@@ -71,6 +52,7 @@ body{
   color:var(--text);
   -webkit-font-smoothing:antialiased;
   line-height:1.55;
+  touch-action:pan-y;                /* בלי pinch-zoom / double-tap zoom */
 }
 body::before{
   content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
@@ -166,6 +148,7 @@ header.top{
   display:flex;align-items:center;gap:12px;
 }
 .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;letter-spacing:-.3px}
+.brand span{white-space:nowrap}
 .brand .mark{
   width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:20px;
   background:linear-gradient(135deg,var(--primary),var(--primary-2));
@@ -190,7 +173,7 @@ header.top{
   padding:16px 18px;box-shadow:var(--shadow-1);position:relative;overflow:hidden;
 }
 .stat::after{content:"";position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:var(--primary)}
-.stat.g2::after{background:var(--ok)} .stat.g3::after{background:var(--warn)} .stat.g4::after{background:var(--muted)}
+.stat.g3::after{background:var(--warn)}
 .stat .k{font-size:13px;color:var(--text-2);font-weight:600;display:flex;align-items:center;gap:6px}
 .stat .v{font-size:28px;font-weight:800;letter-spacing:-1px;margin-top:2px;font-variant-numeric:tabular-nums}
 .stat .s{font-size:12.5px;color:var(--muted)}
@@ -345,7 +328,9 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
 .fab:hover{transform:translateY(-2px)}
 @media(max-width:600px){
   .stat .v{font-size:24px}
-  .top-inner{padding:10px 14px}
+  .top-inner{padding:10px 14px;gap:8px}
+  .brand{font-size:16.5px;gap:8px}
+  .brand .mark{width:33px;height:33px;font-size:17px;border-radius:10px}
   .wrap{padding:0 14px 100px}
   .user-pill span{display:none}
 }
@@ -376,7 +361,6 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
       <div class="brand"><div class="mark">🎟️</div><span>הקופונים שלנו</span></div>
       <div class="spacer"></div>
       <button class="btn icon ghost" id="btnRefresh" title="רענון">⟳</button>
-      <button class="btn icon ghost" id="btnTheme" title="מצב כהה/בהיר">🌙</button>
       <div class="user-pill">
         <img id="userPic" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
         <span id="userName"></span>
@@ -449,13 +433,17 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
     </div>
     <div class="row2">
       <div class="field">
+        <label for="fDiscount">אחוז הנחה <span class="hint">(לתיעוד)</span></label>
+        <input type="number" id="fDiscount" min="0" max="100" step="0.1" dir="ltr" placeholder="למשל 25">
+      </div>
+      <div class="field">
         <label for="fExpiry">תוקף</label>
         <input type="date" id="fExpiry">
       </div>
-      <div class="field" id="wrapPin">
-        <label for="fPin">קוד / PIN <span class="hint">(אופציונלי)</span></label>
-        <input type="text" id="fPin" dir="ltr">
-      </div>
+    </div>
+    <div class="field" id="wrapPin">
+      <label for="fPin">קוד / PIN <span class="hint">(אופציונלי)</span></label>
+      <input type="text" id="fPin" dir="ltr">
     </div>
     <div class="field" id="wrapUrl" hidden>
       <label for="fUrl">קישור לבירור יתרה</label>
@@ -562,7 +550,7 @@ const CONFIG = {
 };
 
 const PROVIDERS = {
-  praxell:   { label:'פראקסל',   color:'#0079c2', auto:true,  needs:['phone'],
+  praxell:   { label:'פראקסל',   color:'#0079c2', auto:true,  needs:['phone','cardNumber'],
                url:'https://www.praxellpayroll.com/cardbalance/giftcardgeneral.php' },
   multipass: { label:'מולטיפאס', color:'#7c3aed', auto:true,  needs:['cardNumber'],
                url:'https://multipass.co.il/GetBalance' },
@@ -589,6 +577,7 @@ const money = n => new Intl.NumberFormat('he-IL',{style:'currency',currency:'ILS
                      minimumFractionDigits:0, maximumFractionDigits:2}).format(Number(n)||0);
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const today = ()=> new Date().toISOString().slice(0,10);
+const fmtPct = n => (Math.round(Number(n)*10)/10) + '%';
 const daysTo = d => d ? Math.ceil((new Date(d+'T00:00:00') - new Date(today()+'T00:00:00'))/864e5) : null;
 
 function toast(msg, kind='ok', ms=3200){
@@ -598,22 +587,6 @@ function toast(msg, kind='ok', ms=3200){
   $('#toasts').appendChild(el);
   setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(8px)';
                    el.style.transition='.25s'; setTimeout(()=>el.remove(),260); }, ms);
-}
-
-/* ==========================================================================
-   Theme
-   ========================================================================== */
-(function initTheme(){
-  const saved = localStorage.getItem('cp_theme');
-  const dark = saved ? saved==='dark'
-                     : matchMedia('(prefers-color-scheme: dark)').matches;
-  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-})();
-function toggleTheme(){
-  const dark = document.documentElement.dataset.theme !== 'dark';
-  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-  localStorage.setItem('cp_theme', dark ? 'dark' : 'light');
-  $('#btnTheme').textContent = dark ? '☀️' : '🌙';
 }
 
 /* ==========================================================================
@@ -639,8 +612,7 @@ function bootAuth(){
     cancel_on_tap_outside: false
   });
   google.accounts.id.renderButton($('#gbtn'), {
-    theme: document.documentElement.dataset.theme==='dark' ? 'filled_black' : 'outline',
-    size:'large', shape:'pill', text:'signin_with', locale:'he', width:300
+    theme:'outline', size:'large', shape:'pill', text:'signin_with', locale:'he', width:300
   });
   const cached = sessionStorage.getItem('cp_token');
   if(cached){
@@ -768,18 +740,12 @@ function render(){
 function renderStats(){
   const active = S.coupons.filter(c=>c.status==='active');
   const total  = active.reduce((s,c)=>s+Number(c.balance||0),0);
-  const spent  = S.usage.reduce((s,u)=>s+Number(u.amount||0),0);
   const soon   = active.filter(c=>{ const d=daysTo(c.expiry); return d!==null && d<=30 && d>=0; });
-  const arch   = S.coupons.filter(c=>c.status!=='active').length;
   $('#stats').innerHTML = `
     <div class="stat"><div class="k">💰 יתרה כוללת</div><div class="v">${money(total)}</div>
       <div class="s">ב-${active.length} קופונים פעילים</div></div>
-    <div class="stat g2"><div class="k">🧾 נוצל עד היום</div><div class="v">${money(spent)}</div>
-      <div class="s">${S.usage.length} רישומי שימוש</div></div>
     <div class="stat g3"><div class="k">⏳ פג תוקף בקרוב</div><div class="v">${soon.length}</div>
-      <div class="s">${soon.length ? soon.map(c=>esc(c.name)).slice(0,2).join(' · ') : 'אין קופונים דחופים'}</div></div>
-    <div class="stat g4"><div class="k">📦 בהיסטוריה</div><div class="v">${arch}</div>
-      <div class="s">קופונים שנוצלו</div></div>`;
+      <div class="s">${soon.length ? soon.map(c=>esc(c.name)).slice(0,2).join(' · ') : 'אין קופונים דחופים'}</div></div>`;
 }
 
 function renderFilters(){
@@ -848,6 +814,7 @@ function cardHtml(c){
     else           chips.push(`<span class="chip">תוקף ${c.expiry.split('-').reverse().join('/')}</span>`);
   }
   if(c.lastCheckedAt) chips.push(`<span class="chip ok">✓ נבדק ${relTime(c.lastCheckedAt)}</span>`);
+  if(Number(c.discount) > 0) chips.push(`<span class="chip">🏷️ ${fmtPct(c.discount)} הנחה</span>`);
   const uc = usageOf(c.id).length;
   if(uc) chips.push(`<span class="chip">${uc} שימושים</span>`);
 
@@ -908,6 +875,7 @@ function openCoupon(id){
   $('#fCard').value    = c?.cardNumber || '';
   $('#fInitial').value = c?.initialAmount ?? '';
   $('#fBalance').value = c ? c.balance : '';
+  $('#fDiscount').value = c?.discount ?? '';
   $('#fExpiry').value  = c?.expiry || '';
   $('#fPin').value     = c?.cardPin || '';
   $('#fUrl').value     = c?.balanceUrl || '';
@@ -958,6 +926,7 @@ $('#couponForm').addEventListener('submit', async ev=>{
     phone: $('#fPhone').value.replace(/[^\d]/g,'') || CONFIG.DEFAULT_PHONE,
     initialAmount: Number($('#fInitial').value)||0,
     balance: $('#fBalance').value === '' ? undefined : Number($('#fBalance').value),
+    discount: $('#fDiscount').value === '' ? '' : Number($('#fDiscount').value),
     expiry: $('#fExpiry').value,
     notes: $('#fNotes').value.trim(),
     balanceUrl: $('#fUrl').value.trim()
@@ -1072,6 +1041,7 @@ function openDetails(id){
       <small>${esc(provLabel(c))}${c.expiry?' · תוקף '+c.expiry.split('-').reverse().join('/'):''}</small></div>
     </div>
     ${c.cardNumber ? detRow('מספר כרטיס', `<span dir="ltr" style="user-select:all">${esc(c.cardNumber)}</span>`) : ''}
+    ${Number(c.discount) > 0 ? detRow('אחוז הנחה', fmtPct(c.discount)) : ''}
     ${c.cardPin    ? detRow('קוד/PIN', `<span dir="ltr" style="user-select:all">${esc(c.cardPin)}</span>`) : ''}
     ${c.phone      ? detRow('טלפון', `<span dir="ltr">${esc(c.phone)}</span>`) : ''}
     ${c.notes      ? detRow('הערות', esc(c.notes)) : ''}
@@ -1208,7 +1178,7 @@ function renderCheck(state, coupon){
     body.innerHTML = head + `
       <div class="steps">
         <div class="step"><div class="n">1</div><div class="t"><b>העוזר יפתח דפדפן</b>
-          <small>ויזין ${p.needs.includes('phone')?'את מספר הטלפון':'את מספר הכרטיס'} באתר ${esc(p.label)}</small></div></div>
+          <small>וימלא את הפרטים באתר ${esc(p.label)}</small></div></div>
         <div class="step"><div class="n">2</div><div class="t"><b>אישור reCAPTCHA</b>
           <small>אם יופיע — יש לאשר בחלון הדפדפן שנפתח</small></div></div>
         <div class="step"><div class="n">3</div><div class="t"><b>הזנת קוד ה-SMS</b>
@@ -1309,6 +1279,9 @@ function botErr(code){
     bad_token:'מפתח החיבור לעוזר שגוי. פתחו את הגדרות העוזר ובדקו שוב.',
     unknown_provider:'העוזר לא מכיר את הספק הזה.',
     otp_input_not_found:'לא נמצא שדה להזנת קוד ה-SMS באתר.',
+    card_required:'האתר מבקש מספר כרטיס — הוסיפו אותו לקופון ונסו שוב.',
+    bad_card:'מספר הכרטיס חסר או קצר מדי.',
+    bad_phone:'מספר הטלפון לא תקין.',
     balance_not_found:'הבדיקה הצליחה אבל לא זוהתה יתרה בטקסט.',
     timeout:'תם הזמן. נסו שוב.'
   })[code] || ('שגיאת עוזר: ' + (code||'לא ידועה'));
@@ -1387,7 +1360,6 @@ async function saveManualBalance(source){
    ========================================================================== */
 $('#btnAdd').addEventListener('click', ()=>openCoupon());
 $('#btnRefresh').addEventListener('click', loadAll);
-$('#btnTheme').addEventListener('click', toggleTheme);
 $('#btnLogout').addEventListener('click', ()=>logout());
 $('#q').addEventListener('input', e=>{ S.q = e.target.value; renderGrid(); });
 $('#filterProvider').addEventListener('change', e=>{ S.provider = e.target.value; renderGrid(); });
@@ -1431,7 +1403,6 @@ document.addEventListener('click', e=>{
 });
 $('#dlgCheck').addEventListener('close', ()=>{ clearTimeout(pollTimer); });
 
-$('#btnTheme').textContent = document.documentElement.dataset.theme==='dark' ? '☀️' : '🌙';
 bootAuth();
 </script>
 </body>
