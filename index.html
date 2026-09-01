@@ -108,6 +108,19 @@ input::placeholder,textarea::placeholder{color:var(--muted)}
   padding:2px 0;margin-top:2px;
 }
 .linkbtn:hover{text-decoration:underline}
+
+/* \u05e9\u05d5\u05e8\u05d5\u05ea \u05dc\u05d4\u05d5\u05e1\u05e4\u05ea \u05db\u05de\u05d4 \u05e7\u05d5\u05e4\u05d5\u05e0\u05d9\u05dd \u05d1\u05d1\u05ea \u05d0\u05d7\u05ea */
+#cardsList{display:flex;flex-direction:column;gap:10px}
+.crow{
+  border:1px solid var(--line-strong);border-radius:14px;padding:12px 13px;
+  background:var(--surface-2);display:flex;flex-direction:column;gap:10px;
+}
+.crow-head{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:13px;font-weight:700;color:var(--text-2);
+}
+.crow-head .btn{width:28px;height:28px;padding:0;font-size:14px}
+.crow .row2{gap:10px}
 .chip.ok{background:var(--ok-soft);color:var(--ok)}
 .chip.warn{background:var(--warn-soft);color:var(--warn)}
 .chip.danger{background:var(--danger-soft);color:var(--danger)}
@@ -224,6 +237,18 @@ header.top{
 .card-actions .btn{flex:1}
 .card.archived{opacity:.9}
 .card.archived .balance{color:var(--muted)}
+
+/* סומן בנייד כ"השתמשתי" — ממתין לבדיקת יתרה במחשב */
+.card.flagged{
+  border-color:var(--ok);
+  box-shadow:0 0 0 2.5px color-mix(in srgb, var(--ok) 60%, transparent), var(--shadow-1);
+}
+.card.flagged:hover{
+  box-shadow:0 0 0 2.5px var(--ok), var(--shadow-2);
+}
+.btn.flag{color:var(--muted);font-size:17px;line-height:1}
+.btn.flag:hover{background:var(--ok-soft);color:var(--ok)}
+.btn.flag.on{background:var(--ok);color:#fff}
 
 .empty{
   text-align:center;padding:70px 20px;color:var(--text-2);
@@ -411,25 +436,19 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
       <label for="fName">כינוי לקופון</label>
       <input type="text" id="fName" placeholder="לדוגמה: מתנה מהעבודה" required>
     </div>
-    <div class="field" id="wrapCard">
-      <label for="fCard">מספר כרטיס</label>
-      <input type="text" id="fCard" inputmode="numeric" dir="ltr" placeholder="16 ספרות">
-      <button type="button" class="linkbtn" id="btnOtherPhone">☎ בירור היתרה מטלפון אחר</button>
+
+    <div id="cardsList"></div>
+    <button type="button" class="btn ghost sm" id="btnAddRow">＋ הוספת קופון נוסף (אותם פרטים)</button>
+
+    <div class="field" id="wrapBalance" hidden>
+      <label for="fBalance">יתרה נוכחית (₪)</label>
+      <input type="number" id="fBalance" min="0" step="0.01" dir="ltr" placeholder="ריק = כמו הסכום המקורי">
     </div>
+    <button type="button" class="linkbtn" id="btnOtherPhone">☎ בירור היתרה מטלפון אחר</button>
     <div class="field" id="wrapPhone" hidden>
       <label for="fPhone">טלפון לבירור יתרה</label>
       <input type="tel" id="fPhone" dir="ltr" placeholder="05XXXXXXXX" pattern="0\d{8,9}">
       <div class="hint" id="defPhoneHint"></div>
-    </div>
-    <div class="row2">
-      <div class="field">
-        <label for="fInitial">סכום מקורי (₪)</label>
-        <input type="number" id="fInitial" min="0" step="0.01" dir="ltr" required>
-      </div>
-      <div class="field">
-        <label for="fBalance">יתרה נוכחית (₪)</label>
-        <input type="number" id="fBalance" min="0" step="0.01" dir="ltr" placeholder="ריק = כמו הסכום המקורי">
-      </div>
     </div>
     <div class="row2">
       <div class="field">
@@ -440,10 +459,6 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
         <label for="fExpiry">תוקף</label>
         <input type="date" id="fExpiry">
       </div>
-    </div>
-    <div class="field" id="wrapPin">
-      <label for="fPin">קוד / PIN <span class="hint">(אופציונלי)</span></label>
-      <input type="text" id="fPin" dir="ltr">
     </div>
     <div class="field" id="wrapUrl" hidden>
       <label for="fUrl">קישור לבירור יתרה</label>
@@ -778,6 +793,8 @@ function renderGrid(){
 
   list.sort((a,b)=>{
     if(S.view==='active'){
+      // מה שסומן בנייד לבדיקה עולה לראש הרשימה
+      if(!!a.needsCheck !== !!b.needsCheck) return a.needsCheck ? -1 : 1;
       const da = daysTo(a.expiry), db = daysTo(b.expiry);
       if(da!==null && db!==null && da!==db) return da-db;
       if(da!==null && db===null) return -1;
@@ -816,12 +833,13 @@ function cardHtml(c){
     else           chips.push(`<span class="chip">תוקף ${c.expiry.split('-').reverse().join('/')}</span>`);
   }
   if(c.lastCheckedAt) chips.push(`<span class="chip ok">✓ נבדק ${relTime(c.lastCheckedAt)}</span>`);
+  if(c.needsCheck && !archived) chips.push(`<span class="chip ok">✔ ממתין לבדיקת יתרה</span>`);
   if(Number(c.discount) > 0) chips.push(`<span class="chip">🏷️ ${fmtPct(c.discount)} הנחה</span>`);
   const uc = usageOf(c.id).length;
   if(uc) chips.push(`<span class="chip">${uc} שימושים</span>`);
 
   return `
-  <article class="card ${archived?'archived':''}" style="--pc:${p.color}">
+  <article class="card ${archived?'archived':''} ${c.needsCheck && !archived ?'flagged':''}" style="--pc:${p.color}">
     <div class="strip"></div>
     <div class="card-body">
       <div class="card-head">
@@ -830,6 +848,9 @@ function cardHtml(c){
           <h3>${esc(c.name||'ללא שם')}</h3>
           <div class="sub">${esc(provLabel(c))}${c.cardNumber?' · '+esc(maskCard(c.cardNumber)):''}</div>
         </div>
+        ${archived ? '' : `<button class="btn icon flag ${c.needsCheck?'on':''}"
+          onclick="toggleFlag('${c.id}')"
+          title="${c.needsCheck?'הסרת הסימון':'סימון: השתמשתי — לבדוק יתרה'}">✔</button>`}
         <button class="btn icon ghost" onclick="openDetails('${c.id}')" title="פרטים">⋯</button>
       </div>
       <div class="balance-row">
@@ -874,14 +895,17 @@ function openCoupon(id){
 
   $('#fProviderName').value = c?.providerName || '';
   $('#fName').value    = c?.name || '';
-  $('#fCard').value    = c?.cardNumber || '';
-  $('#fInitial').value = c?.initialAmount ?? '';
   $('#fBalance').value = c ? c.balance : '';
   $('#fDiscount').value = c?.discount ?? '';
   $('#fExpiry').value  = c?.expiry || '';
-  $('#fPin').value     = c?.cardPin || '';
   $('#fUrl').value     = c?.balanceUrl || '';
   $('#fNotes').value   = c?.notes || '';
+
+  // בעריכה שורה אחת בלבד; בהוספה אפשר לצבור כמה קופונים זהים
+  $('#cardsList').innerHTML = '';
+  addCardRow(c ? { cardNumber:c.cardNumber, cardPin:c.cardPin, amount:c.initialAmount } : {});
+  $('#btnAddRow').hidden = !!c;
+  $('#wrapBalance').hidden = !c;
 
   const customPhone = !!(c?.phone && c.phone !== CONFIG.DEFAULT_PHONE);
   $('#fPhone').value = c?.phone || CONFIG.DEFAULT_PHONE;
@@ -892,16 +916,64 @@ function openCoupon(id){
   $('#dlgCoupon').showModal();
 }
 
+/** מוסיף שורת קופון: מספר כרטיס, PIN וסכום — שאר הפרטים משותפים. */
+function addCardRow(v = {}){
+  const row = document.createElement('div');
+  row.className = 'crow';
+  row.innerHTML = `
+    <div class="crow-head">
+      <span class="rowTitle"></span>
+      <button type="button" class="btn icon danger rowDel" title="הסרה">✕</button>
+    </div>
+    <div class="field">
+      <label>מספר כרטיס <span class="hint rowCardHint"></span></label>
+      <input type="text" class="rCard" inputmode="numeric" dir="ltr" placeholder="16 ספרות"
+             value="${esc(v.cardNumber||'')}">
+    </div>
+    <div class="row2">
+      <div class="field">
+        <label>סכום (₪)</label>
+        <input type="number" class="rAmount" min="0" step="0.01" dir="ltr" required
+               value="${v.amount ?? ''}">
+      </div>
+      <div class="field">
+        <label>קוד / PIN</label>
+        <input type="text" class="rPin" dir="ltr" value="${esc(v.cardPin||'')}">
+      </div>
+    </div>`;
+  row.querySelector('.rowDel').addEventListener('click', ()=>{ row.remove(); syncRows(); });
+  $('#cardsList').appendChild(row);
+  syncRows();
+  return row;
+}
+
+/** מעדכן כותרות שורות והסתרת כפתור המחיקה כשיש שורה אחת. */
+function syncRows(){
+  const rows = $$('#cardsList .crow');
+  rows.forEach((r,i)=>{
+    r.querySelector('.rowTitle').textContent = rows.length > 1 ? `קופון ${i+1}` : '';
+    r.querySelector('.rowDel').hidden = rows.length < 2;
+  });
+  syncProviderFields();
+}
+
 function syncProviderFields(){
   const k = $('#fProvider').value;
   $('#wrapProviderName').hidden = k !== 'other';
   $('#wrapUrl').hidden = k !== 'other';
   const needs = PROVIDERS[k]?.needs || [];
-  $('#fCard').required  = needs.includes('cardNumber');
   $('#btnOtherPhone').hidden = !needs.includes('phone') || !$('#wrapPhone').hidden;
-  $('#wrapCard').querySelector('label').innerHTML =
-    'מספר כרטיס' + (needs.includes('cardNumber') ? ' <span class="hint">(נדרש)</span>' : '');
+  $$('#cardsList .crow').forEach(r=>{
+    r.querySelector('.rCard').required = needs.includes('cardNumber');
+    r.querySelector('.rowCardHint').textContent = needs.includes('cardNumber') ? '(נדרש)' : '';
+  });
 }
+
+$('#btnAddRow').addEventListener('click', ()=>{
+  const row = addCardRow({});
+  row.querySelector('.rCard').focus();
+  row.scrollIntoView({ block:'nearest', behavior:'smooth' });
+});
 
 $('#btnOtherPhone').addEventListener('click', ()=>{
   $('#wrapPhone').hidden = false;
@@ -918,30 +990,41 @@ $('#couponForm').addEventListener('submit', async ev=>{
   const form = ev.target;
   if(!form.checkValidity()){ form.reportValidity(); return; }
 
-  const coupon = {
-    id: editingId || undefined,
+  const rows = $$('#cardsList .crow');
+  const shared = {
     provider: $('#fProvider').value,
     providerName: $('#fProviderName').value.trim(),
-    name: $('#fName').value.trim(),
-    cardNumber: $('#fCard').value.replace(/\s/g,''),
-    cardPin: $('#fPin').value.trim(),
     phone: $('#fPhone').value.replace(/[^\d]/g,'') || CONFIG.DEFAULT_PHONE,
-    initialAmount: Number($('#fInitial').value)||0,
-    balance: $('#fBalance').value === '' ? undefined : Number($('#fBalance').value),
     discount: $('#fDiscount').value === '' ? '' : Number($('#fDiscount').value),
     expiry: $('#fExpiry').value,
     notes: $('#fNotes').value.trim(),
     balanceUrl: $('#fUrl').value.trim()
   };
+  const baseName = $('#fName').value.trim();
+
+  const coupons = rows.map((r,i)=>{
+    const amount = Number(r.querySelector('.rAmount').value) || 0;
+    return {
+      ...shared,
+      id: editingId || undefined,
+      name: rows.length > 1 ? `${baseName} #${i+1}` : baseName,
+      cardNumber: r.querySelector('.rCard').value.replace(/\s/g,''),
+      cardPin: r.querySelector('.rPin').value.trim(),
+      initialAmount: amount,
+      balance: editingId && $('#fBalance').value !== ''
+        ? Number($('#fBalance').value) : amount
+    };
+  });
 
   const btn = $('#btnSaveCoupon');
   btn.disabled = true; btn.textContent = 'שומר…';
   try{
-    const d = await api('saveCoupon', { coupon });
-    upsert(S.coupons, d.coupon);
+    const d = await api('saveCoupons', { coupons });
+    (d.coupons || []).forEach(c => upsert(S.coupons, c));
     render();
     $('#dlgCoupon').close();
-    toast(editingId ? 'הקופון עודכן' : 'הקופון נוסף');
+    toast(editingId ? 'הקופון עודכן'
+        : coupons.length > 1 ? `נוספו ${coupons.length} קופונים` : 'הקופון נוסף');
   }catch(e){ toast(e.message,'err',5000); }
   finally{ btn.disabled=false; btn.textContent='שמירה'; }
 });
@@ -996,6 +1079,26 @@ $('#usageForm').addEventListener('submit', async ev=>{
       ? 'הקופון נוצל במלואו ועבר להיסטוריה' : 'השימוש נרשם');
   }catch(e){ toast(e.message,'err',5000); }
 });
+
+/** סימון מהנייד שהשתמשנו בקופון, כדי שבמחשב נדע מה לבדוק. */
+async function toggleFlag(id){
+  const c = S.coupons.find(x=>x.id===id);
+  if(!c) return;
+  const next = !c.needsCheck;
+  c.needsCheck = next;
+  render();
+  try{
+    const d = await api('setFlag', { id, needsCheck: next });
+    upsert(S.coupons, d.coupon);
+    render();
+    toast(next ? 'סומן לבדיקת יתרה' : 'הסימון הוסר');
+  }catch(e){
+    const cur = S.coupons.find(x=>x.id===id);
+    if(cur) cur.needsCheck = !next;
+    render();
+    toast(e.message,'err',5000);
+  }
+}
 
 async function setStatus(id, status){
   try{
