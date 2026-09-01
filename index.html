@@ -1139,10 +1139,15 @@ function renderCheck(state, coupon){
   const head = `<div class="step done"><div class="n">₪</div><div class="t">
       <b>${esc(c.name)}</b><small>${esc(provLabel(c))} · יתרה שמורה: ${money(c.balance)}</small></div></div>`;
 
+  const zeroNote = `<div class="callout" id="zeroNote" hidden
+      style="background:var(--ok-soft);color:var(--ok);border-color:var(--ok)">
+      הקופון נוצל במלואו — בשמירה הוא יעבור אוטומטית ללשונית <b>היסטוריה</b>.
+    </div>`;
+
   const manual = `
     <div class="field"><label for="manualBalance">עדכון יתרה ידני (₪)</label>
       <input type="number" id="manualBalance" min="0" step="0.01" dir="ltr" value="${Number(c.balance||0)}">
-    </div>`;
+    </div>${zeroNote}`;
 
   if(state.phase === 'connecting'){
     body.innerHTML = head + `<div class="step active"><div class="n"><div class="spin"></div></div>
@@ -1162,7 +1167,7 @@ function renderCheck(state, coupon){
           <small dir="ltr" style="user-select:all">${esc(c.phone)}</small></div></div>`:''}
       ${manual}`;
     foot.innerHTML = `<button class="btn ghost" onclick="openCheck('${c.id}')">נסה שוב</button>
-      <button class="btn primary" onclick="saveManualBalance()">שמירת יתרה</button>`;
+      <button class="btn primary" id="btnSaveBalance" onclick="saveManualBalance()">שמירת יתרה</button>`;
   }
 
   else if(state.phase === 'unsupported'){
@@ -1171,7 +1176,7 @@ function renderCheck(state, coupon){
       ${c.balanceUrl ? `<a class="btn ghost" href="${esc(c.balanceUrl)}" target="_blank" rel="noopener noreferrer">פתיחת אתר הספק ↗</a>`:''}
       ${manual}`;
     foot.innerHTML = `<button class="btn ghost" data-close>ביטול</button>
-      <button class="btn primary" onclick="saveManualBalance()">שמירת יתרה</button>`;
+      <button class="btn primary" id="btnSaveBalance" onclick="saveManualBalance()">שמירת יתרה</button>`;
   }
 
   else if(state.phase === 'ready'){
@@ -1223,7 +1228,7 @@ function renderCheck(state, coupon){
       $('#otpInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') submitOtp(); });
     } else if(j.status==='error'){
       foot.innerHTML = `<button class="btn ghost" onclick="openCheck('${c.id}')">נסה שוב</button>
-        <button class="btn primary" onclick="saveManualBalance()">שמירה ידנית</button>`;
+        <button class="btn primary" id="btnSaveBalance" onclick="saveManualBalance()">שמירה ידנית</button>`;
     } else {
       foot.innerHTML = `<button class="btn ghost" onclick="cancelCheck()">ביטול</button>`;
     }
@@ -1237,12 +1242,29 @@ function renderCheck(state, coupon){
       <div class="field"><label for="manualBalance">יתרה (₪)</label>
         <input type="number" id="manualBalance" min="0" step="0.01" dir="ltr"
                value="${j.balance ?? Number(c.balance||0)}" style="font-size:22px;font-weight:700"></div>
+      ${zeroNote}
       ${j.raw ? `<details><summary style="cursor:pointer;color:var(--text-2);font-size:13.5px">הטקסט שנקרא מהאתר</summary>
         <pre style="white-space:pre-wrap;font-size:12.5px;color:var(--text-2);background:var(--surface-2);
              padding:10px;border-radius:10px;margin-top:8px;max-height:180px;overflow:auto">${esc(j.raw)}</pre></details>`:''}`;
     foot.innerHTML = `<button class="btn ghost" data-close>ביטול</button>
-      <button class="btn primary" onclick="saveManualBalance('auto')">שמירת היתרה</button>`;
+      <button class="btn primary" id="btnSaveBalance" onclick="saveManualBalance('auto')">שמירת היתרה</button>`;
   }
+
+  wireBalanceInput();
+}
+
+/** כשהיתרה 0, השמירה מעבירה את הקופון להיסטוריה — שיהיה גלוי לפני הלחיצה. */
+function wireBalanceInput(){
+  const inp = $('#manualBalance'), btn = $('#btnSaveBalance'), note = $('#zeroNote');
+  if(!inp || !btn) return;
+  const upd = ()=>{
+    const zero = inp.value !== '' && Number(inp.value) === 0;
+    btn.textContent = zero ? '📦 שמירה והעברה להיסטוריה' : btn.dataset.label || btn.textContent;
+    if(note) note.hidden = !zero;
+  };
+  btn.dataset.label = btn.textContent;
+  inp.addEventListener('input', upd);
+  upd();
 }
 
 function stepOrder(s){
