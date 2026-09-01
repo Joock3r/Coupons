@@ -1290,7 +1290,7 @@ function renderCheck(state, coupon){
         <div class="step"><div class="n">1</div><div class="t"><b>העוזר יפתח דפדפן</b>
           <small>וימלא את הפרטים באתר ${esc(p.label)}</small></div></div>
         <div class="step"><div class="n">2</div><div class="t"><b>אישור reCAPTCHA</b>
-          <small>אם יופיע — יש לאשר בחלון הדפדפן שנפתח</small></div></div>
+          <small>אם יופיע — סמנו או פתרו אותו בחלון הדפדפן שנפתח</small></div></div>
         <div class="step"><div class="n">3</div><div class="t"><b>הזנת קוד ה-SMS</b>
           <small>תקבלו SMS לנייד ותזינו את הקוד כאן</small></div></div>
         <div class="step"><div class="n">4</div><div class="t"><b>שמירת היתרה</b>
@@ -1405,6 +1405,7 @@ function botErr(code){
     forbidden_origin:'העוזר חסם את הבקשה (Origin לא מורשה). הוסיפו את הכתובת ל-ALLOWED_ORIGINS.',
     bad_token:'מפתח החיבור לעוזר שגוי. פתחו את הגדרות העוזר ובדקו שוב.',
     unknown_provider:'העוזר לא מכיר את הספק הזה.',
+    provider_busy:'בדיקה לספק הזה כבר רצה. סיימו או בטלו אותה קודם.',
     otp_input_not_found:'לא נמצא שדה להזנת קוד ה-SMS באתר.',
     card_required:'האתר מבקש מספר כרטיס — הוסיפו אותו לקופון ונסו שוב.',
     bad_card:'מספר הכרטיס חסר או קצר מדי.',
