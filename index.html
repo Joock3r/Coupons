@@ -376,6 +376,7 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
   .balance{font-size:22px}
   .card-title h3{font-size:14.5px}
   .card-actions{display:none}
+  .only-desktop{display:none !important}
 }
 .skeleton{
   background:linear-gradient(90deg,var(--surface-3) 25%,var(--surface-2) 37%,var(--surface-3) 63%);
@@ -490,33 +491,6 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
   <div class="modal-foot">
     <button class="btn ghost" value="cancel" type="submit" formnovalidate>ביטול</button>
     <button class="btn primary" value="save" type="submit" id="btnSaveCoupon">שמירה</button>
-  </div>
-</form></dialog>
-
-<dialog id="dlgUsage"><form method="dialog" class="modal" id="usageForm">
-  <div class="modal-head"><h2>רישום שימוש</h2>
-    <button class="btn icon ghost" value="cancel" type="submit" formnovalidate aria-label="סגור">✕</button></div>
-  <div class="modal-body">
-    <div id="usageCouponInfo"></div>
-    <div class="field">
-      <label for="uAmount">סכום שנוצל (₪)</label>
-      <input type="number" id="uAmount" min="0.01" step="0.01" dir="ltr" required>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
-        <button type="button" class="btn sm ghost" data-quick="50">50</button>
-        <button type="button" class="btn sm ghost" data-quick="100">100</button>
-        <button type="button" class="btn sm ghost" data-quick="200">200</button>
-        <button type="button" class="btn sm soft" data-quick="all">כל היתרה</button>
-      </div>
-    </div>
-    <div class="row2">
-      <div class="field"><label for="uDate">תאריך</label><input type="date" id="uDate" required></div>
-      <div class="field"><label for="uPlace">איפה</label><input type="text" id="uPlace" placeholder="שם החנות"></div>
-    </div>
-    <div class="field"><label for="uNote">הערה</label><input type="text" id="uNote"></div>
-  </div>
-  <div class="modal-foot">
-    <button class="btn ghost" value="cancel" type="submit" formnovalidate>ביטול</button>
-    <button class="btn primary" value="save" type="submit">רישום</button>
   </div>
 </form></dialog>
 
@@ -1114,53 +1088,6 @@ function upsert(arr, obj){
   if(i>=0) arr[i] = obj; else arr.push(obj);
 }
 
-/* ==========================================================================
-   Usage
-   ========================================================================== */
-let usageCouponId = null;
-
-function openUsage(id){
-  const c = S.coupons.find(x=>x.id===id);
-  if(!c) return;
-  $('#dlgDetails').close();
-  usageCouponId = id;
-  $('#usageCouponInfo').innerHTML =
-    `<div class="step done"><div class="n">₪</div><div class="t">
-       <b>${esc(c.name)}</b><small>יתרה נוכחית: ${money(c.balance)}</small></div></div>`;
-  $('#uAmount').value=''; $('#uDate').value = today();
-  $('#uPlace').value=''; $('#uNote').value='';
-  $('#uAmount').max = Math.max(0.01, Number(c.balance||0));
-  $('#dlgUsage').showModal();
-  setTimeout(()=>$('#uAmount').focus(), 60);
-}
-
-$$('#usageForm [data-quick]').forEach(b=> b.addEventListener('click', ()=>{
-  const c = S.coupons.find(x=>x.id===usageCouponId);
-  $('#uAmount').value = b.dataset.quick==='all' ? Number(c?.balance||0) : b.dataset.quick;
-}));
-
-$('#usageForm').addEventListener('submit', async ev=>{
-  if(ev.submitter?.value !== 'save') return;
-  ev.preventDefault();
-  const form = ev.target;
-  if(!form.checkValidity()){ form.reportValidity(); return; }
-  try{
-    const d = await api('addUsage', {
-      couponId: usageCouponId,
-      amount: Number($('#uAmount').value),
-      date: $('#uDate').value,
-      place: $('#uPlace').value.trim(),
-      note: $('#uNote').value.trim()
-    });
-    S.usage.push(d.usage);
-    upsert(S.coupons, d.coupon);
-    render();
-    $('#dlgUsage').close();
-    toast(d.coupon.status==='archived'
-      ? 'הקופון נוצל במלואו ועבר להיסטוריה' : 'השימוש נרשם');
-  }catch(e){ toast(e.message,'err',5000); }
-});
-
 /** סימון מהנייד שהשתמשנו בקופון, כדי שבמחשב נדע מה לבדוק. */
 async function toggleFlag(id){
   const c = S.coupons.find(x=>x.id===id);
@@ -1190,17 +1117,6 @@ async function setStatus(id, status){
   }catch(e){ toast(e.message,'err',5000); }
 }
 
-async function deleteUsage(id){
-  if(!confirm('למחוק את רישום השימוש ולהחזיר את הסכום ליתרה?')) return;
-  try{
-    const d = await api('deleteUsage', { id });
-    S.usage = S.usage.filter(u=>u.id!==id);
-    if(d.coupon) upsert(S.coupons, d.coupon);
-    render(); openDetails(d.coupon?.id);
-    toast('רישום השימוש נמחק');
-  }catch(e){ toast(e.message,'err',5000); }
-}
-
 async function deleteCoupon(id){
   if(!confirm('למחוק את הקופון לצמיתות? ההיסטוריה שלו תישאר בגיליון.')) return;
   try{
@@ -1217,7 +1133,6 @@ async function deleteCoupon(id){
 function openDetails(id){
   const c = S.coupons.find(x=>x.id===id);
   if(!c) return;
-  const list = usageOf(id);
   const p = provOf(c);
   $('#detTitle').textContent = c.name || 'פרטי קופון';
   $('#detBody').innerHTML = `
@@ -1229,25 +1144,13 @@ function openDetails(id){
     ${c.cardNumber ? detRow('מספר כרטיס', `<span dir="ltr" style="user-select:all">${esc(c.cardNumber)}</span>`) : ''}
     ${Number(c.discount) > 0 ? detRow('אחוז הנחה', fmtPct(c.discount)) : ''}
     ${c.cardPin    ? detRow('קוד/PIN', `<span dir="ltr" style="user-select:all">${esc(c.cardPin)}</span>`) : ''}
-    ${c.phone      ? detRow('טלפון', `<span dir="ltr">${esc(c.phone)}</span>`) : ''}
     ${c.notes      ? detRow('הערות', esc(c.notes)) : ''}
-    ${c.lastCheckedAt ? detRow('נבדק לאחרונה', relTime(c.lastCheckedAt)) : ''}
-    ${detRow('נוצר ע"י', esc(c.createdBy||'') + ' · ' + String(c.createdAt||'').slice(0,10))}
-    <h3 style="margin:8px 0 0;font-size:15.5px">היסטוריית שימושים (${list.length})</h3>
-    ${list.length ? `<div class="list">${list.map(u=>`
-      <div class="li">
-        <bdi class="amt">${money(-u.amount)}</bdi>
-        <div class="txt"><b>${esc(u.place||'ללא פירוט')}</b>
-          <small>${esc(u.date||'')}${u.note?' · '+esc(u.note):''} · ${esc((u.createdBy||'').split('@')[0])}</small></div>
-        <button class="btn icon ghost" onclick="deleteUsage('${u.id}')" title="מחיקה">🗑</button>
-      </div>`).join('')}</div>`
-      : `<p style="color:var(--muted);margin:4px 0">עדיין לא נרשמו שימושים.</p>`}`;
+    ${c.lastCheckedAt ? detRow('נבדק לאחרונה', relTime(c.lastCheckedAt)) : ''}`;
 
   $('#detFoot').innerHTML = c.status === 'active'
-    ? `<button class="btn primary" onclick="openUsage('${c.id}')">💳 רישום שימוש</button>
-       <button class="btn soft" onclick="openCheck('${c.id}')">🔍 בדיקת יתרה</button>
-       <button class="btn ghost" onclick="openCoupon('${c.id}')">✎</button>
-       <button class="btn ghost" onclick="setStatus('${c.id}','archived')">📦</button>
+    ? `<button class="btn primary only-desktop" onclick="openCheck('${c.id}')">🔍 בדיקת יתרה</button>
+       <button class="btn ghost" onclick="openCoupon('${c.id}')">✎ עריכה</button>
+       <button class="btn ghost" onclick="setStatus('${c.id}','archived')">📦 להיסטוריה</button>
        <button class="btn danger" onclick="deleteCoupon('${c.id}')">🗑</button>`
     : `<button class="btn ghost" onclick="setStatus('${c.id}','active')">↩ לפעילים</button>
        <button class="btn ghost" onclick="openCoupon('${c.id}')">✎ עריכה</button>
