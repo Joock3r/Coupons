@@ -553,7 +553,7 @@ const CONFIG = {
   GAS_URL: 'https://script.google.com/macros/s/AKfycbxmSdgnvqphR66rhOxhHNz_zph551N7h_lMn8tLf03hWDQaqv_-hb49bKG0dROclw5UBg/exec',
 
   // תצוגה בלבד. ההרשאה האמיתית נאכפת בשרת (Code.gs).
-  ALLOWED_EMAILS: ['tamir.tsricker@gmail.com', 'hilabendor312@gmail.com'],
+  ALLOWED_EMAILS: ['tamir.tsricker@gmail.com', 'nut.cr4ck3r.pro@gmail.com', 'hilabendor312@gmail.com'],
 
   BOT_URL: 'http://127.0.0.1:8787'
 };
@@ -716,6 +716,7 @@ function errText(code){
   return ({
     not_allowed:'החשבון הזה לא מורשה.',
     server_not_configured:'השרת לא הוגדר (חסר Client ID ב-Code.gs).',
+    no_spreadsheet:'הסקריפט לא מחובר לגיליון. מלאו SPREADSHEET_ID ב-CONFIG שב-Code.gs.',
     coupon_not_found:'הקופון לא נמצא.',
     bad_amount:'סכום לא תקין.',
     busy:'השרת עסוק, נסו שוב בעוד רגע.'
