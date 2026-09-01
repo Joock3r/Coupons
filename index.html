@@ -214,6 +214,7 @@ header.top{
   display:flex;flex-direction:column;
 }
 .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
+.card{cursor:pointer}
 .card .strip{height:3px;background:var(--pc,var(--primary))}
 .card-body{padding:12px 14px 11px;display:flex;flex-direction:column;gap:9px;flex:1}
 .card-head{display:flex;align-items:flex-start;gap:8px}
@@ -224,7 +225,17 @@ header.top{
   box-shadow:0 4px 10px color-mix(in srgb, var(--pc,var(--primary)) 40%, transparent);
 }
 .card-title{flex:1;min-width:0}
+.title-row{display:flex;align-items:center;gap:5px;min-width:0}
+.title-row h3{flex:1;min-width:0}
 .card-title h3{margin:0;font-size:15px;font-weight:700;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{
+  flex:none;font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:7px;
+  background:var(--surface-3);color:var(--text-2);white-space:nowrap;
+  font-variant-numeric:tabular-nums;direction:ltr;
+}
+.tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.danger{background:var(--danger-soft);color:var(--danger)}
+.tag.disc{background:var(--primary-soft);color:var(--primary)}
 .card-title .sub{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr;text-align:start}
 .balance-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
 .balance{font-size:24px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
@@ -364,7 +375,7 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
   .card-body{padding:10px 12px 9px;gap:8px}
   .balance{font-size:22px}
   .card-title h3{font-size:14.5px}
-  .card-actions{padding:8px 12px}
+  .card-actions{display:none}
 }
 .skeleton{
   background:linear-gradient(90deg,var(--surface-3) 25%,var(--surface-2) 37%,var(--surface-3) 63%);
@@ -882,48 +893,59 @@ function cardHtml(c){
   const d    = daysTo(c.expiry);
   const archived = c.status !== 'active';
 
-  const chips = [];
-  if(d!==null){
-    if(d<0)        chips.push(`<span class="chip danger">⏰ פג תוקף</span>`);
-    else if(d<=14) chips.push(`<span class="chip danger">⏰ ${d} ימים לתוקף</span>`);
-    else if(d<=45) chips.push(`<span class="chip warn">⏰ ${d} ימים לתוקף</span>`);
-    else           chips.push(`<span class="chip">תוקף ${c.expiry.split('-').reverse().join('/')}</span>`);
+  const tags = [];
+  if(c.expiry){
+    const cls = d===null ? '' : d < 0 ? ' danger' : d <= 14 ? ' danger' : d <= 45 ? ' warn' : '';
+    tags.push(`<span class="tag${cls}" title="תוקף ${esc(fmtDate(c.expiry))}">${esc(expShort(c.expiry))}</span>`);
   }
+  if(Number(c.discount) > 0) tags.push(`<span class="tag disc">${fmtPct(c.discount)}</span>`);
+
+  const chips = [];
   if(c.lastCheckedAt) chips.push(`<span class="chip ok">✓ נבדק ${relTime(c.lastCheckedAt)}</span>`);
   if(c.needsCheck && !archived) chips.push(`<span class="chip ok">✔ ממתין לבדיקת יתרה</span>`);
-  if(Number(c.discount) > 0) chips.push(`<span class="chip">🏷️ ${fmtPct(c.discount)} הנחה</span>`);
   const uc = usageOf(c.id).length;
   if(uc) chips.push(`<span class="chip">${uc} שימושים</span>`);
 
   return `
-  <article class="card ${archived?'archived':''} ${c.needsCheck && !archived ?'flagged':''}" style="--pc:${p.color}">
+  <article class="card ${archived?'archived':''} ${c.needsCheck && !archived ?'flagged':''}"
+           style="--pc:${p.color}" onclick="openDetails('${c.id}')">
     <div class="strip"></div>
     <div class="card-body">
       <div class="card-head">
         <div class="provider-badge">${esc(provLabel(c).slice(0,2))}</div>
         <div class="card-title">
-          <h3>${esc(c.name||'ללא שם')}</h3>
+          <div class="title-row">
+            <h3>${esc(c.name||'ללא שם')}</h3>
+            ${tags.join('')}
+          </div>
           <div class="sub">${esc(provLabel(c))}${c.cardNumber?' · '+esc(maskCard(c.cardNumber)):''}</div>
         </div>
         ${archived ? '' : `<button class="btn icon flag ${c.needsCheck?'on':''}"
-          onclick="toggleFlag('${c.id}')"
+          onclick="event.stopPropagation();toggleFlag('${c.id}')"
           title="${c.needsCheck?'הסרת הסימון':'סימון: השתמשתי — לבדוק יתרה'}">✔</button>`}
-        <button class="btn icon ghost" onclick="openDetails('${c.id}')" title="פרטים">⋯</button>
       </div>
       <div class="balance-row">
         <div class="balance">${money(bal)}<small> / ${money(init)}</small></div>
       </div>
       <div class="bar"><i style="width:${pct}%"></i></div>
-      <div class="meta">${chips.join('')}</div>
+      ${chips.length ? `<div class="meta">${chips.join('')}</div>` : ''}
     </div>
     <div class="card-actions">
       ${archived
-        ? `<button class="btn sm ghost" onclick="setStatus('${c.id}','active')">↩ החזרה לפעילים</button>`
-        : `<button class="btn sm soft" onclick="openUsage('${c.id}')">💳 רישום שימוש</button>
-           <button class="btn sm ghost" onclick="openCheck('${c.id}')">🔍 בדיקת יתרה</button>`}
+        ? `<button class="btn sm ghost" onclick="event.stopPropagation();setStatus('${c.id}','active')">↩ החזרה לפעילים</button>`
+        : `<button class="btn sm ghost" onclick="event.stopPropagation();openCheck('${c.id}')">🔍 בדיקת יתרה</button>`}
     </div>
   </article>`;
 }
+
+/** תוקף מקוצר לתצוגה בכרטיס: 01/27 */
+function expShort(d){
+  if(!d) return '';
+  const [y, m] = d.split('-');
+  return `${m}/${String(y).slice(2)}`;
+}
+
+function fmtDate(d){ return d ? d.split('-').reverse().join('/') : ''; }
 
 function relTime(iso){
   const diff = (Date.now() - new Date(iso).getTime())/1000;
@@ -941,6 +963,7 @@ function relTime(iso){
 let editingId = null;
 
 function openCoupon(id){
+  $('#dlgDetails').close();
   editingId = id || null;
   const c = id ? S.coupons.find(x=>x.id===id) : null;
   $('#couponTitle').textContent = c ? 'עריכת קופון' : 'קופון חדש';
@@ -1099,6 +1122,7 @@ let usageCouponId = null;
 function openUsage(id){
   const c = S.coupons.find(x=>x.id===id);
   if(!c) return;
+  $('#dlgDetails').close();
   usageCouponId = id;
   $('#usageCouponInfo').innerHTML =
     `<div class="step done"><div class="n">₪</div><div class="t">
@@ -1200,7 +1224,7 @@ function openDetails(id){
     <div class="step" style="border-color:${p.color}">
       <div class="n" style="background:${p.color};color:#fff">₪</div>
       <div class="t"><b>${money(c.balance)} מתוך ${money(c.initialAmount)}</b>
-      <small>${esc(provLabel(c))}${c.expiry?' · תוקף '+c.expiry.split('-').reverse().join('/'):''}</small></div>
+      <small>${esc(provLabel(c))}${c.expiry?' · תוקף '+esc(fmtDate(c.expiry)):''}</small></div>
     </div>
     ${c.cardNumber ? detRow('מספר כרטיס', `<span dir="ltr" style="user-select:all">${esc(c.cardNumber)}</span>`) : ''}
     ${Number(c.discount) > 0 ? detRow('אחוז הנחה', fmtPct(c.discount)) : ''}
@@ -1219,12 +1243,15 @@ function openDetails(id){
       </div>`).join('')}</div>`
       : `<p style="color:var(--muted);margin:4px 0">עדיין לא נרשמו שימושים.</p>`}`;
 
-  $('#detFoot').innerHTML = `
-    <button class="btn ghost" onclick="openCoupon('${c.id}')">✎ עריכה</button>
-    ${c.status==='active'
-      ? `<button class="btn ghost" onclick="setStatus('${c.id}','archived')">📦 להיסטוריה</button>`
-      : `<button class="btn ghost" onclick="setStatus('${c.id}','active')">↩ לפעילים</button>`}
-    <button class="btn danger" onclick="deleteCoupon('${c.id}')">מחיקה</button>`;
+  $('#detFoot').innerHTML = c.status === 'active'
+    ? `<button class="btn primary" onclick="openUsage('${c.id}')">💳 רישום שימוש</button>
+       <button class="btn soft" onclick="openCheck('${c.id}')">🔍 בדיקת יתרה</button>
+       <button class="btn ghost" onclick="openCoupon('${c.id}')">✎</button>
+       <button class="btn ghost" onclick="setStatus('${c.id}','archived')">📦</button>
+       <button class="btn danger" onclick="deleteCoupon('${c.id}')">🗑</button>`
+    : `<button class="btn ghost" onclick="setStatus('${c.id}','active')">↩ לפעילים</button>
+       <button class="btn ghost" onclick="openCoupon('${c.id}')">✎ עריכה</button>
+       <button class="btn danger" onclick="deleteCoupon('${c.id}')">מחיקה</button>`;
   $('#dlgDetails').showModal();
 }
 
@@ -1279,6 +1306,7 @@ let checkCouponId = null, pollTimer = null, lastRendered = '';
 async function openCheck(id){
   const c = S.coupons.find(x=>x.id===id);
   if(!c) return;
+  $('#dlgDetails').close();
   checkCouponId = id;
   S.job = null;
   lastRendered = '';
