@@ -148,7 +148,6 @@ input::placeholder,textarea::placeholder{color:var(--muted)}
 .login-card h1{margin:0 0 8px;font-size:26px;font-weight:800;letter-spacing:-.4px}
 .login-card p{margin:0 0 26px;color:var(--text-2);font-size:15px}
 #gbtn{display:flex;justify-content:center;min-height:44px}
-.login-note{margin-top:22px;font-size:12.5px;color:var(--muted);line-height:1.7}
 .login-error{
   margin-top:18px;padding:12px 14px;border-radius:12px;
   background:var(--danger-soft);color:var(--danger);font-size:14px;font-weight:500;
@@ -364,13 +363,9 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
   <div class="login-card">
     <div class="login-logo">🎟️</div>
     <h1>הקופונים שלנו</h1>
-    <p>ניהול קופונים, יתרות ושימושים — לך ולאשתך בלבד.</p>
+    <p>ניהול קופונים, יתרות ושימושים</p>
     <div id="gbtn"></div>
     <div id="loginError" class="login-error" hidden></div>
-    <div class="login-note">
-      הכניסה מוגבלת לחשבונות Google מאושרים בלבד.<br>
-      הנתונים נשמרים בגיליון Google פרטי שבבעלותכם.
-    </div>
   </div>
 </div>
 
@@ -558,7 +553,7 @@ const CONFIG = {
   GAS_URL: 'https://script.google.com/macros/s/AKfycbxmSdgnvqphR66rhOxhHNz_zph551N7h_lMn8tLf03hWDQaqv_-hb49bKG0dROclw5UBg/exec',
 
   // תצוגה בלבד. ההרשאה האמיתית נאכפת בשרת (Code.gs).
-  ALLOWED_EMAILS: ['tamir.tsricker@gmail.com', 'hilabendor312@gmail.com'],
+  ALLOWED_EMAILS: ['tamir.tsricker@gmail.com', 'hilabendor312@gmail.com', 'nut.cr4ck3r.pro@gmail.com'],
 
   // הטלפון שמשמש לבירור יתרה בכל הקופונים (ניתן לדרוס לקופון בודד)
   DEFAULT_PHONE: '0585710710',
