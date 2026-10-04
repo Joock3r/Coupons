@@ -206,7 +206,7 @@ header.top{
 .search svg{position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);color:var(--muted)}
 
 /* ============================ Coupon grid ============================ */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(315px,1fr));gap:16px}
 .card{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   box-shadow:var(--shadow-1);overflow:hidden;position:relative;
@@ -214,40 +214,27 @@ header.top{
   display:flex;flex-direction:column;
 }
 .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
-.card{cursor:pointer}
-.card .strip{height:3px;background:var(--pc,var(--primary))}
-.card-body{padding:12px 14px 11px;display:flex;flex-direction:column;gap:9px;flex:1}
-.card-head{display:flex;align-items:flex-start;gap:8px}
-.card-head .btn.icon{width:29px;height:29px;padding:0;font-size:15px;border-radius:9px}
+.card .strip{height:4px;background:var(--pc,var(--primary))}
+.card-body{padding:16px 18px 14px;display:flex;flex-direction:column;gap:12px;flex:1}
+.card-head{display:flex;align-items:flex-start;gap:10px}
 .provider-badge{
-  width:33px;height:33px;border-radius:10px;flex:none;display:grid;place-items:center;
-  font-weight:800;font-size:13px;color:#fff;background:var(--pc,var(--primary));
-  box-shadow:0 4px 10px color-mix(in srgb, var(--pc,var(--primary)) 40%, transparent);
+  width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;
+  font-weight:800;font-size:15px;color:#fff;background:var(--pc,var(--primary));
+  box-shadow:0 5px 14px color-mix(in srgb, var(--pc,var(--primary)) 40%, transparent);
 }
 .card-title{flex:1;min-width:0}
-.title-row{display:flex;align-items:center;gap:5px;min-width:0}
-.title-row h3{flex:1;min-width:0}
-.card-title h3{margin:0;font-size:15px;font-weight:700;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tag{
-  flex:none;font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:7px;
-  background:var(--surface-3);color:var(--text-2);white-space:nowrap;
-  font-variant-numeric:tabular-nums;direction:ltr;
-}
-.tag.warn{background:var(--warn-soft);color:var(--warn)}
-.tag.danger{background:var(--danger-soft);color:var(--danger)}
-.tag.disc{background:var(--primary-soft);color:var(--primary)}
-.card-title .sub{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr;text-align:start}
+.card-title h3{margin:0;font-size:16.5px;font-weight:700;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-title .sub{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr;text-align:start}
 .balance-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
-.balance{font-size:24px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;line-height:1.1}
-.balance small{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:0}
-.bar{height:5px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.balance{font-size:30px;font-weight:800;letter-spacing:-1.2px;font-variant-numeric:tabular-nums;line-height:1.1}
+.balance small{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0}
+.bar{height:7px;border-radius:99px;background:var(--surface-3);overflow:hidden}
 .bar>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--pc,var(--primary)),color-mix(in srgb,var(--pc,var(--primary)) 55%, #fff));transition:width .4s ease}
-.meta{display:flex;flex-wrap:wrap;gap:5px}
-.card .chip{padding:3px 8px;font-size:11.5px}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
 .card-actions{
-  display:flex;gap:6px;padding:9px 14px;border-top:1px solid var(--line);background:var(--surface-2);
+  display:flex;gap:8px;padding:12px 18px;border-top:1px solid var(--line);background:var(--surface-2);
 }
-.card-actions .btn{flex:1;padding:6px 8px;font-size:13px}
+.card-actions .btn{flex:1}
 .card.archived{opacity:.9}
 .card.archived .balance{color:var(--muted)}
 
@@ -342,6 +329,9 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
   border:2.5px solid color-mix(in srgb,var(--primary) 30%, transparent);
   border-top-color:var(--primary);animation:sp .7s linear infinite;
 }
+.btn.primary .spin,.btn.danger .spin{border-color:rgba(255,255,255,.35);border-top-color:#fff}
+.btn .spin{width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-inline-end:7px}
+.btn[disabled].busy{opacity:.75}
 @keyframes sp{to{transform:rotate(360deg)}}
 
 /* ============================ Toasts ============================ */
@@ -371,12 +361,6 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
   .brand .mark{width:33px;height:33px;font-size:17px;border-radius:10px}
   .wrap{padding:0 14px 100px}
   .user-pill span{display:none}
-  .grid{gap:10px}
-  .card-body{padding:10px 12px 9px;gap:8px}
-  .balance{font-size:22px}
-  .card-title h3{font-size:14.5px}
-  .card-actions{display:none}
-  .only-desktop{display:none !important}
 }
 .skeleton{
   background:linear-gradient(90deg,var(--surface-3) 25%,var(--surface-2) 37%,var(--surface-3) 63%);
@@ -491,6 +475,33 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
   <div class="modal-foot">
     <button class="btn ghost" value="cancel" type="submit" formnovalidate>ביטול</button>
     <button class="btn primary" value="save" type="submit" id="btnSaveCoupon">שמירה</button>
+  </div>
+</form></dialog>
+
+<dialog id="dlgUsage"><form method="dialog" class="modal" id="usageForm">
+  <div class="modal-head"><h2>רישום שימוש</h2>
+    <button class="btn icon ghost" value="cancel" type="submit" formnovalidate aria-label="סגור">✕</button></div>
+  <div class="modal-body">
+    <div id="usageCouponInfo"></div>
+    <div class="field">
+      <label for="uAmount">סכום שנוצל (₪)</label>
+      <input type="number" id="uAmount" min="0.01" step="0.01" dir="ltr" required>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <button type="button" class="btn sm ghost" data-quick="50">50</button>
+        <button type="button" class="btn sm ghost" data-quick="100">100</button>
+        <button type="button" class="btn sm ghost" data-quick="200">200</button>
+        <button type="button" class="btn sm soft" data-quick="all">כל היתרה</button>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label for="uDate">תאריך</label><input type="date" id="uDate" required></div>
+      <div class="field"><label for="uPlace">איפה</label><input type="text" id="uPlace" placeholder="שם החנות"></div>
+    </div>
+    <div class="field"><label for="uNote">הערה</label><input type="text" id="uNote"></div>
+  </div>
+  <div class="modal-foot">
+    <button class="btn ghost" value="cancel" type="submit" formnovalidate>ביטול</button>
+    <button class="btn primary" value="save" type="submit">רישום</button>
   </div>
 </form></dialog>
 
@@ -675,25 +686,80 @@ function logout(msg){
 /* ==========================================================================
    API
    ========================================================================== */
+/* בקשות שאפשר לשלוח שוב בלי ליצור כפילות (addUsage מוסיף שורה בכל קריאה). */
+const RETRYABLE = ['bootstrap','saveCoupon','saveCoupons','recordBalance','setFlag','setStatus','deleteCoupon','deleteUsage'];
+
 async function api(type, payload={}){
   if(CONFIG.GAS_URL.includes('PASTE_YOUR')) throw new Error('חסרה כתובת שרת (GAS_URL)');
-  const res = await fetch(CONFIG.GAS_URL, {
-    method:'POST',
-    // text/plain שומר על "simple request" - בלי preflight ש-Apps Script לא עונה לו
-    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-    body: JSON.stringify({ type, idToken:S.idToken, ...payload })
-  });
-  const text = await res.text();
-  let data;
-  try{ data = JSON.parse(text); }
-  catch(e){ throw new Error('תשובה לא צפויה מהשרת'); }
-  if(!data.ok){
-    if(['unauthorized','expired_token','invalid_token','no_token'].includes(data.error)){
-      logout('ההתחברות פגה. יש להתחבר מחדש.');
+  const body = JSON.stringify({ type, idToken:S.idToken, ...payload });
+  const tries = RETRYABLE.includes(type) ? 3 : 1;
+  let lastErr;
+
+  for(let attempt=1; attempt<=tries; attempt++){
+    const ctrl = new AbortController();
+    const timer = setTimeout(()=>ctrl.abort(), 30000);
+    let res, text;
+    try{
+      res = await fetch(CONFIG.GAS_URL, {
+        method:'POST',
+        // text/plain שומר על "simple request" - בלי preflight ש-Apps Script לא עונה לו
+        headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+        body, signal: ctrl.signal, redirect:'follow'
+      });
+      text = await res.text();
+    }catch(e){
+      lastErr = new Error(e.name === 'AbortError'
+        ? 'השרת לא השיב בזמן. נסו שוב.'
+        : 'אין חיבור לשרת. בדקו את האינטרנט ונסו שוב.');
+      if(attempt < tries){ await sleep(attempt*700); continue; }
+      throw lastErr;
+    }finally{ clearTimeout(timer); }
+
+    let data = null;
+    try{ data = JSON.parse(text); }catch(e){}
+
+    if(!data){
+      // גוגל החזירה דף HTML (עומס/שגיאה זמנית או דף הרשאה) ולא JSON
+      const needsAuth = /accounts\.google\.com|ServiceLogin|הרשאה|authoriz/i.test(text);
+      lastErr = new Error(needsAuth
+        ? 'השרת מבקש הרשאה מחדש. פרסמו את ה-Apps Script מחדש כ-"Anyone".'
+        : `תשובה לא צפויה מהשרת (HTTP ${res.status}). נסו שוב בעוד רגע.`);
+      if(!needsAuth && attempt < tries){ await sleep(attempt*700); continue; }
+      throw lastErr;
     }
-    throw new Error(errText(data.error));
+
+    if(!data.ok){
+      if(['unauthorized','expired_token','invalid_token','no_token'].includes(data.error)){
+        logout('ההתחברות פגה. יש להתחבר מחדש.');
+      }
+      if(data.error === 'busy' && attempt < tries){ await sleep(attempt*900); continue; }
+      throw new Error(errText(data.error));
+    }
+    return data;
   }
-  return data;
+  throw lastErr;
+}
+
+const sleep = ms => new Promise(r=>setTimeout(r, ms));
+
+/** מסמן כפתור כ"עובד" וחוסם לחיצות כפולות עד שהבקשה חוזרת. */
+async function withBusy(btn, label, fn){
+  if(!btn) return fn();
+  if(btn.dataset.busy) return;
+  btn.dataset.busy = '1';
+  const prev = btn.innerHTML;
+  btn.style.minWidth = btn.offsetWidth + 'px';
+  btn.classList.add('busy');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spin"></span>${esc(label)}`;
+  try{ return await fn(); }
+  finally{
+    delete btn.dataset.busy;
+    btn.disabled = false;
+    btn.classList.remove('busy');
+    btn.innerHTML = prev;
+    btn.style.minWidth = '';
+  }
 }
 
 function errText(code){
@@ -740,8 +806,8 @@ function maskCard(n){
 }
 
 function render(){
-  renderFilters();
   renderStats();
+  renderFilters();
   renderGrid();
   renderBotChip();
 }
@@ -762,16 +828,13 @@ function renderStats(){
       <div class="s">${soon.length ? soon.map(c=>esc(c.name)).slice(0,2).join(' · ') : 'אין קופונים דחופים'}</div></div>`;
 }
 
-/** הקופונים שבלשונית הנוכחית, לפני חיפוש וסינון ספק. */
-function viewCoupons(){
-  return S.coupons.filter(c=> S.view==='active' ? c.status==='active' : c.status!=='active');
-}
-
 /** הקופונים שמוצגים כרגע — לפי לשונית, חיפוש וספק. */
 function visibleCoupons(){
   const q = S.q.trim().toLowerCase();
-  return viewCoupons().filter(c=>{
-    if(S.provider && filterKey(c) !== S.provider) return false;
+  return S.coupons.filter(c=>{
+    const inView = S.view==='active' ? c.status==='active' : c.status!=='active';
+    if(!inView) return false;
+    if(S.provider && c.provider!==S.provider) return false;
     if(q){
       const hay = [c.name, c.providerName, provLabel(c), c.notes, c.cardNumber].join(' ').toLowerCase();
       if(!hay.includes(q)) return false;
@@ -782,7 +845,7 @@ function visibleCoupons(){
 
 const isFiltered = ()=> !!(S.q.trim() || S.provider);
 
-function applyFilters(){ renderFilters(); renderStats(); renderGrid(); }
+function applyFilters(){ renderStats(); renderGrid(); }
 
 function clearFilters(){
   S.q = ''; S.provider = '';
@@ -790,32 +853,12 @@ function clearFilters(){
   applyFilters();
 }
 
-/**
- * רשימת הספקים נבנית מהקופונים שבלשונית הנוכחית, כולל שמות ספקים
- * חופשיים שהוקלדו תחת "אחר".
- */
 function renderFilters(){
   const sel = $('#filterProvider');
-  const inView = viewCoupons();
-  const groups = new Map();
-  inView.forEach(c=>{
-    const k = filterKey(c);
-    const g = groups.get(k) || { key:k, label:provLabel(c), n:0 };
-    g.n++; groups.set(k, g);
-  });
-
-  if(S.provider && !groups.has(S.provider)) S.provider = '';
-
-  const opts = [...groups.values()].sort((a,b)=> a.label.localeCompare(b.label,'he'));
-  sel.innerHTML = `<option value="">כל הספקים (${inView.length})</option>` +
-    opts.map(o=>`<option value="${esc(o.key)}">${esc(o.label)} (${o.n})</option>`).join('');
-  sel.value = S.provider;
-}
-
-/** מפתח סינון: ספק ידוע, או שם חופשי כשהספק הוא "אחר". */
-function filterKey(c){
-  return c.provider === 'other' && c.providerName
-    ? 'n:' + c.providerName : 'p:' + c.provider;
+  if(sel.dataset.built) return;
+  sel.dataset.built = '1';
+  sel.innerHTML = '<option value="">כל הספקים</option>' +
+    Object.entries(PROVIDERS).map(([k,p])=>`<option value="${k}">${p.label}</option>`).join('');
 }
 
 function renderGrid(){
@@ -831,11 +874,13 @@ function renderGrid(){
     if(S.view==='active'){
       // מה שסומן בנייד לבדיקה עולה לראש הרשימה
       if(!!a.needsCheck !== !!b.needsCheck) return a.needsCheck ? -1 : 1;
+      const pa = provLabel(a), pb = provLabel(b);
+      if(pa !== pb) return pa.localeCompare(pb,'he');
       const da = daysTo(a.expiry), db = daysTo(b.expiry);
       if(da!==null && db!==null && da!==db) return da-db;
       if(da!==null && db===null) return -1;
       if(db!==null && da===null) return 1;
-      return Number(b.balance||0)-Number(a.balance||0);
+      return String(a.name||'').localeCompare(String(b.name||''),'he');
     }
     return String(b.archivedAt||'').localeCompare(String(a.archivedAt||''));
   });
@@ -867,59 +912,48 @@ function cardHtml(c){
   const d    = daysTo(c.expiry);
   const archived = c.status !== 'active';
 
-  const tags = [];
-  if(c.expiry){
-    const cls = d===null ? '' : d < 0 ? ' danger' : d <= 14 ? ' danger' : d <= 45 ? ' warn' : '';
-    tags.push(`<span class="tag${cls}" title="תוקף ${esc(fmtDate(c.expiry))}">${esc(expShort(c.expiry))}</span>`);
-  }
-  if(Number(c.discount) > 0) tags.push(`<span class="tag disc">${fmtPct(c.discount)}</span>`);
-
   const chips = [];
+  if(d!==null){
+    if(d<0)        chips.push(`<span class="chip danger">⏰ פג תוקף</span>`);
+    else if(d<=14) chips.push(`<span class="chip danger">⏰ ${d} ימים לתוקף</span>`);
+    else if(d<=45) chips.push(`<span class="chip warn">⏰ ${d} ימים לתוקף</span>`);
+    else           chips.push(`<span class="chip">תוקף ${c.expiry.split('-').reverse().join('/')}</span>`);
+  }
   if(c.lastCheckedAt) chips.push(`<span class="chip ok">✓ נבדק ${relTime(c.lastCheckedAt)}</span>`);
   if(c.needsCheck && !archived) chips.push(`<span class="chip ok">✔ ממתין לבדיקת יתרה</span>`);
+  if(Number(c.discount) > 0) chips.push(`<span class="chip">🏷️ ${fmtPct(c.discount)} הנחה</span>`);
   const uc = usageOf(c.id).length;
   if(uc) chips.push(`<span class="chip">${uc} שימושים</span>`);
 
   return `
-  <article class="card ${archived?'archived':''} ${c.needsCheck && !archived ?'flagged':''}"
-           style="--pc:${p.color}" onclick="openDetails('${c.id}')">
+  <article class="card ${archived?'archived':''} ${c.needsCheck && !archived ?'flagged':''}" style="--pc:${p.color}">
     <div class="strip"></div>
     <div class="card-body">
       <div class="card-head">
         <div class="provider-badge">${esc(provLabel(c).slice(0,2))}</div>
         <div class="card-title">
-          <div class="title-row">
-            <h3>${esc(c.name||'ללא שם')}</h3>
-            ${tags.join('')}
-          </div>
+          <h3>${esc(c.name||'ללא שם')}</h3>
           <div class="sub">${esc(provLabel(c))}${c.cardNumber?' · '+esc(maskCard(c.cardNumber)):''}</div>
         </div>
         ${archived ? '' : `<button class="btn icon flag ${c.needsCheck?'on':''}"
-          onclick="event.stopPropagation();toggleFlag('${c.id}')"
+          onclick="toggleFlag('${c.id}')"
           title="${c.needsCheck?'הסרת הסימון':'סימון: השתמשתי — לבדוק יתרה'}">✔</button>`}
+        <button class="btn icon ghost" onclick="openDetails('${c.id}')" title="פרטים">⋯</button>
       </div>
       <div class="balance-row">
         <div class="balance">${money(bal)}<small> / ${money(init)}</small></div>
       </div>
       <div class="bar"><i style="width:${pct}%"></i></div>
-      ${chips.length ? `<div class="meta">${chips.join('')}</div>` : ''}
+      <div class="meta">${chips.join('')}</div>
     </div>
     <div class="card-actions">
       ${archived
-        ? `<button class="btn sm ghost" onclick="event.stopPropagation();setStatus('${c.id}','active')">↩ החזרה לפעילים</button>`
-        : `<button class="btn sm ghost" onclick="event.stopPropagation();openCheck('${c.id}')">🔍 בדיקת יתרה</button>`}
+        ? `<button class="btn sm ghost" onclick="setStatus('${c.id}','active')">↩ החזרה לפעילים</button>`
+        : `<button class="btn sm soft" onclick="openUsage('${c.id}')">💳 רישום שימוש</button>
+           <button class="btn sm ghost" onclick="openCheck('${c.id}')">🔍 בדיקת יתרה</button>`}
     </div>
   </article>`;
 }
-
-/** תוקף מקוצר לתצוגה בכרטיס: 01/27 */
-function expShort(d){
-  if(!d) return '';
-  const [y, m] = d.split('-');
-  return `${m}/${String(y).slice(2)}`;
-}
-
-function fmtDate(d){ return d ? d.split('-').reverse().join('/') : ''; }
 
 function relTime(iso){
   const diff = (Date.now() - new Date(iso).getTime())/1000;
@@ -937,7 +971,6 @@ function relTime(iso){
 let editingId = null;
 
 function openCoupon(id){
-  $('#dlgDetails').close();
   editingId = id || null;
   const c = id ? S.coupons.find(x=>x.id===id) : null;
   $('#couponTitle').textContent = c ? 'עריכת קופון' : 'קופון חדש';
@@ -1088,6 +1121,54 @@ function upsert(arr, obj){
   if(i>=0) arr[i] = obj; else arr.push(obj);
 }
 
+/* ==========================================================================
+   Usage
+   ========================================================================== */
+let usageCouponId = null;
+
+function openUsage(id){
+  const c = S.coupons.find(x=>x.id===id);
+  if(!c) return;
+  usageCouponId = id;
+  $('#usageCouponInfo').innerHTML =
+    `<div class="step done"><div class="n">₪</div><div class="t">
+       <b>${esc(c.name)}</b><small>יתרה נוכחית: ${money(c.balance)}</small></div></div>`;
+  $('#uAmount').value=''; $('#uDate').value = today();
+  $('#uPlace').value=''; $('#uNote').value='';
+  $('#uAmount').max = Math.max(0.01, Number(c.balance||0));
+  $('#dlgUsage').showModal();
+  setTimeout(()=>$('#uAmount').focus(), 60);
+}
+
+$$('#usageForm [data-quick]').forEach(b=> b.addEventListener('click', ()=>{
+  const c = S.coupons.find(x=>x.id===usageCouponId);
+  $('#uAmount').value = b.dataset.quick==='all' ? Number(c?.balance||0) : b.dataset.quick;
+}));
+
+$('#usageForm').addEventListener('submit', async ev=>{
+  if(ev.submitter?.value !== 'save') return;
+  ev.preventDefault();
+  const form = ev.target;
+  if(!form.checkValidity()){ form.reportValidity(); return; }
+  await withBusy(ev.submitter, 'שומר…', async ()=>{
+    try{
+      const d = await api('addUsage', {
+        couponId: usageCouponId,
+        amount: Number($('#uAmount').value),
+        date: $('#uDate').value,
+        place: $('#uPlace').value.trim(),
+        note: $('#uNote').value.trim()
+      });
+      S.usage.push(d.usage);
+      upsert(S.coupons, d.coupon);
+      render();
+      $('#dlgUsage').close();
+      toast(d.coupon.status==='archived'
+        ? 'הקופון נוצל במלואו ועבר להיסטוריה' : 'השימוש נרשם');
+    }catch(e){ toast(e.message,'err',6000); }
+  });
+});
+
 /** סימון מהנייד שהשתמשנו בקופון, כדי שבמחשב נדע מה לבדוק. */
 async function toggleFlag(id){
   const c = S.coupons.find(x=>x.id===id);
@@ -1117,6 +1198,17 @@ async function setStatus(id, status){
   }catch(e){ toast(e.message,'err',5000); }
 }
 
+async function deleteUsage(id){
+  if(!confirm('למחוק את רישום השימוש ולהחזיר את הסכום ליתרה?')) return;
+  try{
+    const d = await api('deleteUsage', { id });
+    S.usage = S.usage.filter(u=>u.id!==id);
+    if(d.coupon) upsert(S.coupons, d.coupon);
+    render(); openDetails(d.coupon?.id);
+    toast('רישום השימוש נמחק');
+  }catch(e){ toast(e.message,'err',5000); }
+}
+
 async function deleteCoupon(id){
   if(!confirm('למחוק את הקופון לצמיתות? ההיסטוריה שלו תישאר בגיליון.')) return;
   try{
@@ -1133,28 +1225,38 @@ async function deleteCoupon(id){
 function openDetails(id){
   const c = S.coupons.find(x=>x.id===id);
   if(!c) return;
+  const list = usageOf(id);
   const p = provOf(c);
   $('#detTitle').textContent = c.name || 'פרטי קופון';
   $('#detBody').innerHTML = `
     <div class="step" style="border-color:${p.color}">
       <div class="n" style="background:${p.color};color:#fff">₪</div>
       <div class="t"><b>${money(c.balance)} מתוך ${money(c.initialAmount)}</b>
-      <small>${esc(provLabel(c))}${c.expiry?' · תוקף '+esc(fmtDate(c.expiry)):''}</small></div>
+      <small>${esc(provLabel(c))}${c.expiry?' · תוקף '+c.expiry.split('-').reverse().join('/'):''}</small></div>
     </div>
     ${c.cardNumber ? detRow('מספר כרטיס', `<span dir="ltr" style="user-select:all">${esc(c.cardNumber)}</span>`) : ''}
     ${Number(c.discount) > 0 ? detRow('אחוז הנחה', fmtPct(c.discount)) : ''}
     ${c.cardPin    ? detRow('קוד/PIN', `<span dir="ltr" style="user-select:all">${esc(c.cardPin)}</span>`) : ''}
+    ${c.phone      ? detRow('טלפון', `<span dir="ltr">${esc(c.phone)}</span>`) : ''}
     ${c.notes      ? detRow('הערות', esc(c.notes)) : ''}
-    ${c.lastCheckedAt ? detRow('נבדק לאחרונה', relTime(c.lastCheckedAt)) : ''}`;
+    ${c.lastCheckedAt ? detRow('נבדק לאחרונה', relTime(c.lastCheckedAt)) : ''}
+    ${detRow('נוצר ע"י', esc(c.createdBy||'') + ' · ' + String(c.createdAt||'').slice(0,10))}
+    <h3 style="margin:8px 0 0;font-size:15.5px">היסטוריית שימושים (${list.length})</h3>
+    ${list.length ? `<div class="list">${list.map(u=>`
+      <div class="li">
+        <bdi class="amt">${money(-u.amount)}</bdi>
+        <div class="txt"><b>${esc(u.place||'ללא פירוט')}</b>
+          <small>${esc(u.date||'')}${u.note?' · '+esc(u.note):''} · ${esc((u.createdBy||'').split('@')[0])}</small></div>
+        <button class="btn icon ghost" onclick="deleteUsage('${u.id}')" title="מחיקה">🗑</button>
+      </div>`).join('')}</div>`
+      : `<p style="color:var(--muted);margin:4px 0">עדיין לא נרשמו שימושים.</p>`}`;
 
-  $('#detFoot').innerHTML = c.status === 'active'
-    ? `<button class="btn primary only-desktop" onclick="openCheck('${c.id}')">🔍 בדיקת יתרה</button>
-       <button class="btn ghost" onclick="openCoupon('${c.id}')">✎ עריכה</button>
-       <button class="btn ghost" onclick="setStatus('${c.id}','archived')">📦 להיסטוריה</button>
-       <button class="btn danger" onclick="deleteCoupon('${c.id}')">🗑</button>`
-    : `<button class="btn ghost" onclick="setStatus('${c.id}','active')">↩ לפעילים</button>
-       <button class="btn ghost" onclick="openCoupon('${c.id}')">✎ עריכה</button>
-       <button class="btn danger" onclick="deleteCoupon('${c.id}')">מחיקה</button>`;
+  $('#detFoot').innerHTML = `
+    <button class="btn ghost" onclick="openCoupon('${c.id}')">✎ עריכה</button>
+    ${c.status==='active'
+      ? `<button class="btn ghost" onclick="setStatus('${c.id}','archived')">📦 להיסטוריה</button>`
+      : `<button class="btn ghost" onclick="setStatus('${c.id}','active')">↩ לפעילים</button>`}
+    <button class="btn danger" onclick="deleteCoupon('${c.id}')">מחיקה</button>`;
   $('#dlgDetails').showModal();
 }
 
@@ -1204,12 +1306,11 @@ function renderBotChip(){
   $('#btnBotSettings').style.color = S.bot.online ? 'var(--ok)' : '';
 }
 
-let checkCouponId = null, pollTimer = null, lastRendered = '';
+let checkCouponId = null, pollTimer = null, lastRendered = '', otpSending = false;
 
 async function openCheck(id){
   const c = S.coupons.find(x=>x.id===id);
   if(!c) return;
-  $('#dlgDetails').close();
   checkCouponId = id;
   S.job = null;
   lastRendered = '';
@@ -1315,8 +1416,14 @@ function renderCheck(state, coupon){
     if(j.status==='awaiting_otp'){
       foot.innerHTML = `<button class="btn ghost" onclick="cancelCheck()">ביטול</button>
         <button class="btn primary" onclick="submitOtp()">אישור הקוד</button>`;
-      setTimeout(()=>$('#otpInput')?.focus(), 60);
-      $('#otpInput')?.addEventListener('keydown', e=>{ if(e.key==='Enter') submitOtp(); });
+      otpSending = false;
+      const otp = $('#otpInput');
+      setTimeout(()=>otp?.focus(), 60);
+      otp?.addEventListener('keydown', e=>{ if(e.key==='Enter') submitOtp(); });
+      // קוד ה-SMS הוא 6 ספרות — שולחים לבד בלי ללחוץ על הכפתור
+      otp?.addEventListener('input', ()=>{
+        if(otp.value.replace(/\D/g,'').length === 6) submitOtp();
+      });
     } else if(j.status==='error'){
       foot.innerHTML = `<button class="btn ghost" onclick="openCheck('${c.id}')">נסה שוב</button>
         <button class="btn primary" id="btnSaveBalance" onclick="saveManualBalance()">שמירה ידנית</button>`;
@@ -1349,6 +1456,7 @@ function wireBalanceInput(){
   const inp = $('#manualBalance'), btn = $('#btnSaveBalance'), note = $('#zeroNote');
   if(!inp || !btn) return;
   const upd = ()=>{
+    if(btn.dataset.busy) return;
     const zero = inp.value !== '' && Number(inp.value) === 0;
     btn.textContent = zero ? '📦 שמירה והעברה להיסטוריה' : btn.dataset.label || btn.textContent;
     if(note) note.hidden = !zero;
@@ -1433,8 +1541,10 @@ function pollJob(){
 }
 
 async function submitOtp(){
+  if(otpSending) return;
   const code = ($('#otpInput')?.value || '').replace(/\D/g,'');
   if(code.length < 4) return toast('הזינו את הקוד המלא','err');
+  otpSending = true;
   clearTimeout(pollTimer);
   renderCheck({ phase:'running', job:{status:'submitting', message:'שולח את הקוד…'} });
   try{
@@ -1445,7 +1555,7 @@ async function submitOtp(){
     pollJob();
   }catch(e){
     renderCheck({ phase:'running', job:{status:'error', message:e.message} });
-  }
+  }finally{ otpSending = false; }
 }
 
 async function cancelCheck(){
@@ -1458,17 +1568,19 @@ async function cancelCheck(){
 async function saveManualBalance(source){
   const val = Number($('#manualBalance')?.value);
   if(!isFinite(val) || val < 0) return toast('סכום לא תקין','err');
-  try{
-    const d = await api('recordBalance', {
-      couponId: checkCouponId, balance: val,
-      source: source || 'manual', raw: S.job?.raw || ''
-    });
-    upsert(S.coupons, d.coupon);
-    render();
-    clearTimeout(pollTimer); S.job=null;
-    $('#dlgCheck').close();
-    toast(d.coupon.status==='archived' ? 'היתרה התאפסה — הקופון עבר להיסטוריה' : 'היתרה עודכנה');
-  }catch(e){ toast(e.message,'err',5000); }
+  await withBusy($('#btnSaveBalance'), 'שומר…', async ()=>{
+    try{
+      const d = await api('recordBalance', {
+        couponId: checkCouponId, balance: val,
+        source: source || 'manual', raw: S.job?.raw || ''
+      });
+      upsert(S.coupons, d.coupon);
+      render();
+      clearTimeout(pollTimer); S.job=null;
+      $('#dlgCheck').close();
+      toast(d.coupon.status==='archived' ? 'היתרה התאפסה — הקופון עבר להיסטוריה' : 'היתרה עודכנה');
+    }catch(e){ toast(e.message,'err',6000); }
+  });
 }
 
 /* ==========================================================================
