@@ -533,6 +533,14 @@ dialog::backdrop{background:rgba(9,12,25,.55);backdrop-filter:blur(3px)}
       <label for="botToken">מפתח חיבור <span class="hint">(מוצג בחלון הפקודה של העוזר)</span></label>
       <input type="text" id="botToken" dir="ltr" placeholder="נמלא אוטומטית בעת חיבור">
     </div>
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:9px;cursor:pointer">
+        <input type="checkbox" id="botShowChrome" style="width:18px;height:18px">
+        <span>להציג את חלון הכרום בזמן הבדיקה</span>
+      </label>
+      <div class="hint">כבוי = הבדיקה רצה ברקע בלי להפריע על המסך. הדליקו לדיבאג או כשצריך
+        לפתור reCAPTCHA בעצמכם. במולטיפאס החלון תמיד יוצג.</div>
+    </div>
     <div class="callout">
       להפעלת העוזר, פתחו חלון פקודה בתיקיית <b>balance-bot</b> והריצו:
       <code>npm install
@@ -587,6 +595,8 @@ const S = {
   loading:false,
   bot:{ url: localStorage.getItem('cp_bot_url') || CONFIG.BOT_URL,
         token: localStorage.getItem('cp_bot_token') || '',
+        showChrome: localStorage.getItem('cp_bot_show_chrome') === '1',
+        needsVisible: [],
         online:false, version:'' },
   job:null
 };
@@ -1290,6 +1300,7 @@ async function pingBot(){
     const d = await botFetch('/ping', {}, 2500);
     S.bot.online = !!d.ok;
     S.bot.version = d.version || '';
+    S.bot.needsVisible = d.needsVisible || [];
     if(d.token && d.token !== S.bot.token){
       S.bot.token = d.token;
       localStorage.setItem('cp_bot_token', d.token);
@@ -1388,7 +1399,8 @@ function renderCheck(state, coupon){
       ${needPhone ? `<div class="field"><label for="ckPhone">מספר טלפון</label>
         <input type="tel" id="ckPhone" dir="ltr" placeholder="05XXXXXXXX"></div>`:''}
       ${needCard ? `<div class="field"><label for="ckCard">מספר כרטיס</label>
-        <input type="text" id="ckCard" dir="ltr" inputmode="numeric" placeholder="16 ספרות"></div>`:''}`;
+        <input type="text" id="ckCard" dir="ltr" inputmode="numeric" placeholder="16 ספרות"></div>`:''}
+      ${browserModeRow(c)}`;
     foot.innerHTML = `<button class="btn ghost" data-close>ביטול</button>
       <button class="btn primary" onclick="startCheck()">▶ התחלת בדיקה</button>`;
   }
@@ -1402,7 +1414,9 @@ function renderCheck(state, coupon){
           <div class="t"><b>פותח את אתר ${esc(p.label)}</b><small>מזין את הפרטים</small></div></div>
         <div class="step ${stepState('awaiting_captcha')}"><div class="n">2</div>
           <div class="t"><b>אישור reCAPTCHA</b><small>${j.status==='awaiting_captcha'
-            ? 'סמנו "אני לא רובוט" בחלון הדפדפן שנפתח' : 'ממתין'}</small></div></div>
+            ? (hiddenFor(c) ? 'הדפדפן רץ מוסתר — בטלו והפעילו "להציג את חלון הכרום"'
+                             : 'סמנו "אני לא רובוט" בחלון הדפדפן שנפתח')
+            : 'ממתין'}</small></div></div>
         <div class="step ${stepState('awaiting_otp')}"><div class="n">3</div>
           <div class="t"><b>קוד אימות ב-SMS</b><small>${esc(j.message||'ממתין')}</small></div></div>
       </div>
@@ -1451,8 +1465,31 @@ function renderCheck(state, coupon){
   wireBalanceInput();
 }
 
-/** כשהיתרה 0, השמירה מעבירה את הקופון להיסטוריה — שיהיה גלוי לפני הלחיצה. */
-function wireBalanceInput(){
+/** האם הבדיקה לקופון הזה תרוץ בדפדפן מוסתר. */
+function hiddenFor(c){
+  return !S.bot.showChrome && !(S.bot.needsVisible || []).includes(c.provider);
+}
+
+/** שורת מצב הדפדפן עם מתג מהיר — נוח לדיבאג בלי להיכנס להגדרות. */
+function browserModeRow(c){
+  const forced = (S.bot.needsVisible || []).includes(c.provider);
+  const hidden = hiddenFor(c);
+  return `<div class="step"><div class="n">${hidden ? '🙈' : '🖥'}</div><div class="t">
+      <b>${hidden ? 'הדפדפן ירוץ מוסתר' : 'חלון הדפדפן יוצג'}</b>
+      <small>${forced ? 'הספק הזה דורש סימון reCAPTCHA ידני, לכן החלון תמיד מוצג.'
+                      : 'אפשר לשנות גם בהגדרות העוזר.'}</small></div>
+    ${forced ? '' : `<button class="btn ghost sm" type="button" onclick="toggleShowChrome()">
+      ${hidden ? 'הצגת הדפדפן' : 'הסתרת הדפדפן'}</button>`}</div>`;
+}
+
+function toggleShowChrome(){
+  S.bot.showChrome = !S.bot.showChrome;
+  localStorage.setItem('cp_bot_show_chrome', S.bot.showChrome ? '1' : '0');
+  renderCheck({ phase:'ready' });
+  toast(S.bot.showChrome ? 'חלון הדפדפן יוצג בבדיקה' : 'הבדיקה תרוץ ברקע');
+}
+
+/** כשהיתרה 0, השמירה מעבירה את הקופון להיסטוריה — שיהיה גלוי לפני הלחיצה. */function wireBalanceInput(){
   const inp = $('#manualBalance'), btn = $('#btnSaveBalance'), note = $('#zeroNote');
   if(!inp || !btn) return;
   const upd = ()=>{
@@ -1486,7 +1523,8 @@ async function startCheck(){
   try{
     const d = await botFetch('/check', {
       method:'POST',
-      body: JSON.stringify({ provider:c.provider, phone, cardNumber, couponId:c.id })
+      body: JSON.stringify({ provider:c.provider, phone, cardNumber, couponId:c.id,
+                             headless: !S.bot.showChrome })
     }, 20000);
     if(!d.ok) throw new Error(botErr(d.error));
     S.job = { id:d.jobId, status:'starting' };
@@ -1601,6 +1639,7 @@ $$('.tabs button').forEach(b=> b.addEventListener('click', ()=>{
 $('#btnBotSettings').addEventListener('click', async ()=>{
   $('#botUrl').value = S.bot.url;
   $('#botToken').value = S.bot.token;
+  $('#botShowChrome').checked = S.bot.showChrome;
   $('#botStatusBox').innerHTML = `<div class="step"><div class="n"><div class="spin"></div></div>
     <div class="t"><b>בודק חיבור…</b></div></div>`;
   $('#dlgBot').showModal();
@@ -1617,8 +1656,10 @@ $('#dlgBot').addEventListener('submit', async ev=>{
   if(ev.submitter?.value !== 'save') return;
   S.bot.url = $('#botUrl').value.trim() || CONFIG.BOT_URL;
   S.bot.token = $('#botToken').value.trim();
+  S.bot.showChrome = $('#botShowChrome').checked;
   localStorage.setItem('cp_bot_url', S.bot.url);
   localStorage.setItem('cp_bot_token', S.bot.token);
+  localStorage.setItem('cp_bot_show_chrome', S.bot.showChrome ? '1' : '0');
   setTimeout(async ()=>{
     const ok = await pingBot();
     toast(ok ? 'העוזר מחובר' : 'לא הצלחנו להתחבר לעוזר', ok?'ok':'err');
